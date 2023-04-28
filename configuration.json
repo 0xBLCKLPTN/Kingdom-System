@@ -1,0 +1,31 @@
+{
+  'version': '0.1.0',
+  'author': 'blcklptn',
+  'repository': 'https://github.com/SicDevelop/Kingdom-System',
+  
+  'modules': {
+    'core' : {
+      'api': {
+        'url': 'https://github.com/SicDevelop/Kingdom-System-api.git',
+        'redis_credentials': {
+          'username': 'root',
+          'password': 'root',
+          'host': 'localhost',
+          'port': '6574:5432',
+          'prefix': 'redis://'
+        }
+      },
+
+      'crud': {
+        'url': 'https://github.com/SicDevelop/Kingdom-System-crud.git',
+        'database_credentials': {
+          'username': 'root',
+          'password': 'root',
+          'host': 'localhost',
+          'port': '5432:5432',
+          'base_name': 'testbase'
+        }
+      }
+    }
+  }
+}
