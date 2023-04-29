@@ -13,3 +13,5 @@
 
 Тут вы можете наблюдать на статусы разработки всего проекта и его документацию.
 
+![alt text](https://raw.githubusercontent.com/SicDevelop/Kingdom-System/main/docs/screenshots/Architecture.png)
+
