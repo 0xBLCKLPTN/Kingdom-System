@@ -1,0 +1,4 @@
+
+class DocumentsController:
+    pass
+

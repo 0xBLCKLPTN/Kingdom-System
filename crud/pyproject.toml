@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "kingdomsystem-crud"
+version = "0.1.0"
+description = ""
+authors = ["blcklptn"]
+readme = "README.md"
+packages = [{include = "kingdomsystem_crud"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
