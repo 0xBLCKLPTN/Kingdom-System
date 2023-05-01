@@ -1,10 +1,13 @@
 use amiquip::{Connection, Channel, Exchange, Publish, Result};
 
+// Public structure for our obeject orientier programming. Ok. Thanks, C.
 pub struct AMQPConnection {
     connection: Connection,
     channel: Channel,
 }
 
+
+// For messaging via RabbitMQ. Api - Crud.
 impl AMQPConnection {
     
     // Initialize our connection to rabbit mq.
@@ -21,6 +24,7 @@ impl AMQPConnection {
         exchange.publish(Publish::new(data.as_bytes(), quque_name)).unwrap();
     }
 
+    // We wanna close our connection?...
     pub async fn close_connection(&self) {
         self.connection.close();
     }

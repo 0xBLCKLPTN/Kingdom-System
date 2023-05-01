@@ -1,0 +1,8 @@
+* TODO create api connection to handler
+Используя протокол amqp подключить API к CRUD.
+
+* TODO create replication of database
+Сделать репликации БД Postgres.
+
+* TODO shard mongoDB in kubernetes cluster.
+Сделать автоматическое шардирование БД Mongo.

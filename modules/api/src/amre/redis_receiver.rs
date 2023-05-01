@@ -1,3 +1,7 @@
+/* We wanna get info about teachers, schedules from redis database.
+ * teachers and schedules is json object. Maybe we wanna deserialize it?
+ */
+
 use redis::{Connection, Client, Commands};
 use redis;
 
@@ -23,6 +27,7 @@ impl Database {
     }
     
     // Get some data via key from redis DB.
+    // key: &str - is a key for getting info from redis. It can contain teachers or schedules values.
     pub fn get_data(&mut self, key: &str) -> String {
         let data: String = redis::cmd("GET")
             .arg(key)
