@@ -109,7 +109,16 @@ services:
       ELASTIC_HOST: host.docker.internal:9200
     depends_on:
       - elastic
+  
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata6:/data/db
 
 volumes:
   cache:
+    driver: local
+  dbdata6:
     driver: local
