@@ -1,6 +1,12 @@
 ![alt text](https://raw.githubusercontent.com/blcklptn/Kingdom-System/main/docs/screenshots/preview.png)
 
 <div align="center">
+  <img src="https://img.shields.io/github/repo-size/blcklptn/Kingdom-System?style=plastic"/>
+  <img src="https://img.shields.io/github/license/blcklptn/Kingdom-System?style=plastic"/>
+  <img src="https://img.shields.io/github/v/release/blcklptn/Kingdom-System?style=plastic"/>
+</div>
+
+<div align="center">
   <q>Sir, your application is not ready yet.</q>
 </div>
 
