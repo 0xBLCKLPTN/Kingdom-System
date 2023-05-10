@@ -17,3 +17,9 @@ __Kingdom-System__ - это веб-приложения для управлен�
 
 ### Architecture
 ![alt text](https://raw.githubusercontent.com/blcklptn/Kingdom-System/main/docs/screenshots/SimplyArchitecture.png)
+
+
+## Contributors
+<a href="https://github.com/blcklptn/Kingdom-System/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=blcklptn/Kingdom-System" />
+</a>
