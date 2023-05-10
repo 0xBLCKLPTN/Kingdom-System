@@ -1,17 +1,10 @@
-# Kingdom-System
+![alt text](https://raw.githubusercontent.com/blcklptn/Kingdom-System/main/docs/screenshots/preview.png)
 
-Стартовая точка всего веб-приложения. Именно отсюда происходит его настройка и настройка всех остальных частей.
-Идея заключалась в том, что приложение имеет микросервисную архитектуру и нам выгоднее писать микросервисы в отдельных репозиториях.
+<div align="center">
+  <q>Sir, your application is not ready yet.</q>
+</div>
 
-Таким образом, мы объединили всё для этих микросервисов в одно место - репозиторий `Kingdom-System`.
-
-Проект Kingdom-System (далее KS) было решено поделить на части:
-
-- KS-crud
-- KS-api
-- ... etc
-
-Тут вы можете наблюдать на статусы разработки всего проекта и его документацию.
-
-![alt text](https://raw.githubusercontent.com/SicDevelop/Kingdom-System/main/docs/screenshots/Architecture.png)
-
+## About project
+```Kingdom-System``` is a application for control schedule, team members, teachers, lessons and documents management.
+### Architecture
+![alt text](https://raw.githubusercontent.com/blcklptn/Kingdom-System/main/docs/screenshots/SimplyArchitecture.png)
