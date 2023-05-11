@@ -8,14 +8,7 @@ const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
 #[handler]
 pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> anyhow::Result<()> {
-    println!("Hello");
-    let tokens = TokenResponse {
-        access_token: Token { token: "TOKENTOKENTOKEN".to_string(), expired: "60124".to_string()},
-        refresh_token: Token { token: "REFRESHTOKEN".to_string(), expired: "1213123".to_string()},
-    };
-
     if req.method() == Method::POST {
-        println!("Is now a here!");
         let (username, password) = (
             req.form::<String>("username").await.unwrap_or_default(),
             req.form::<String>("password").await.unwrap_or_default(),
@@ -37,7 +30,11 @@ pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctr
             &claim,
             &EncodingKey::from_secret(SECRET_KEY.as_bytes()),
         )?;
-        res.render(Redirect::other(&format!("/?jwt_token={}", token)));
+        let tokens = Token {
+            token,
+            exp: exp.unix_timestamp(),
+        };
+        res.render(Json(tokens));
     } else {
         match depot.jwt_auth_state() {
             JwtAuthState::Authorized => {

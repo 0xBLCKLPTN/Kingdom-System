@@ -9,7 +9,7 @@ pub struct BasicResponse {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Token {
     pub token: String,
-    pub expired: String,
+    pub exp: i64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
