@@ -1,6 +1,8 @@
 mod models;
 mod repos;
+mod middleware;
 
+use salvo::affix;
 use models::TokenClaims;
 use salvo::prelude::*;
 use repos::{
@@ -13,7 +15,7 @@ use repos::{
 use jsonwebtoken::{self, EncodingKey};
 use salvo::http::{Method, StatusError};
 use salvo::jwt_auth::QueryFinder;
-
+use middleware::redis_getter;
 
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
@@ -46,17 +48,16 @@ fn router_creator() -> Router {
                         .push(
                             Router::with_path("teachers")
                                 .hoop(auth_handler())
+                                .hoop(affix::inject(redis_getter::RedisGetter::new()))
                                 .get(teachers)
                         )
                 )
         )
 }
 
-
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().init();
-
     let acceptor = TcpListener::new("127.0.0.1:5800").bind().await;
     Server::new(acceptor).serve(router_creator()).await;
 }

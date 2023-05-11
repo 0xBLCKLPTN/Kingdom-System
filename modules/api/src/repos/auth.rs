@@ -3,6 +3,7 @@ use salvo::prelude::*;
 use crate::models::*;
 use salvo::http::{Method, StatusError};
 use time::{Duration, OffsetDateTime};
+use crate::middleware::redis_getter;
 
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
@@ -39,7 +40,7 @@ pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctr
         match depot.jwt_auth_state() {
             JwtAuthState::Authorized => {
                 let data = depot.jwt_auth_data::<TokenClaims>().unwrap();
-                res.render(Text::Plain((format!("Hi {}, have logged in successfully!", data.claims.username))));
+                res.render(Text::Plain(format!("Hi {}, have logged in successfully!", data.claims.username)));
             }
             JwtAuthState::Unauthorized => {
                 res.render(Text::Html(LOGIN_HTML));

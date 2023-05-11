@@ -8,7 +8,10 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.71"
 jsonwebtoken = "8.3.0"
-salvo = {version ="0.41.0", features = ["anyhow", "jwt-auth"]}
+r2d2 = "0.8.10"
+r2d2_redis = "0.14.0"
+redis = {version="0.23.0", features =["r2d2"]}
+salvo = {version ="0.41.0", features = ["affix","anyhow", "jwt-auth"]}
 serde = "1.0.162"
 time = "0.3.21"
 tokio = { version = "1.28.1", features = ["macros"] }
