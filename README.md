@@ -1,17 +1,25 @@
-# Kingdom-System
+![alt text](https://raw.githubusercontent.com/blcklptn/Kingdom-System/main/docs/screenshots/preview.png)
 
-Стартовая точка всего веб-приложения. Именно отсюда происходит его настройка и настройка всех остальных частей.
-Идея заключалась в том, что приложение имеет микросервисную архитектуру и нам выгоднее писать микросервисы в отдельных репозиториях.
+<div align="center">
+  <img src="https://img.shields.io/github/repo-size/blcklptn/Kingdom-System?style=plastic"/>
+  <img src="https://img.shields.io/github/license/blcklptn/Kingdom-System?style=plastic"/>
+  <img src="https://img.shields.io/github/v/release/blcklptn/Kingdom-System?style=plastic"/>
+</div>
 
-Таким образом, мы объединили всё для этих микросервисов в одно место - репозиторий `Kingdom-System`.
+<div align="center">
+  <q>Sir, your application is not ready yet.</q>
+</div>
 
-Проект Kingdom-System (далее KS) было решено поделить на части:
+## About project
+__Kingdom-System__ - это веб-приложения для управления учебным учреждением: его учениками, сотрудниками, расписанием, документооборотом.
+Приложение нужно ставить на сервера учебного учреждения, так как Мы не предоставляем сервера для этого ( пока что ). Оно является как вертикально масштабируемым, так и горизонтально масштабируемым. То есть, Вы можете распределить приложения так, что один сервер находится в одной стране, а второй - в другой.
 
-- KS-crud
-- KS-api
-- ... etc
 
-Тут вы можете наблюдать на статусы разработки всего проекта и его документацию.
+### Architecture
+![alt text](https://raw.githubusercontent.com/blcklptn/Kingdom-System/main/docs/screenshots/SimplyArchitecture.png)
 
-![alt text](https://raw.githubusercontent.com/SicDevelop/Kingdom-System/main/docs/screenshots/Architecture.png)
 
+## Contributors
+<a href="https://github.com/blcklptn/Kingdom-System/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=blcklptn/Kingdom-System" />
+</a>
