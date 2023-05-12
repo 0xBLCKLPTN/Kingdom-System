@@ -21,8 +21,12 @@ use salvo::http::{Method, StatusError};
 use salvo::jwt_auth::QueryFinder;
 use middleware::redis_getter;
 
+
+// Secret key for JWT decoding/encoding.
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
+// Auth handler for checking on JWT
+// now I use it for checking in Query params.
 fn auth_handler() -> JwtAuth<TokenClaims> {
     JwtAuth::new(SECRET_KEY.to_owned())
         .finders(vec![
@@ -31,6 +35,8 @@ fn auth_handler() -> JwtAuth<TokenClaims> {
         .response_error(true) // if true then current page not work.
 }
 
+// Function for generating routers for api.
+// Now it generates all routers inside one function, but i will rewrite it.
 fn router_creator() -> Router {
     Router::new()
         .get(health_checker_handler)
@@ -73,6 +79,7 @@ fn router_creator() -> Router {
         )
 }
 
+// Starts logger and salvo server.
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().init();

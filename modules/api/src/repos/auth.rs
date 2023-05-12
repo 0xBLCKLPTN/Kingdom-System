@@ -5,8 +5,11 @@ use salvo::http::{Method, StatusError};
 use time::{Duration, OffsetDateTime};
 use crate::middleware::redis_getter;
 
+// JWT secret for encode/decode.
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
+// Basic api handler http://127.0.0.1:5800/auth/login. It generates JWT
+// but i will rewrite this function for add some features - refresh token and uuid/role.
 #[handler]
 pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> anyhow::Result<()> {
     if req.method() == Method::POST {
@@ -52,6 +55,8 @@ pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctr
     }
     Ok(())
 }
+
+// Temp login validation server.
 fn validate(username: &str, password: &str) -> bool {
     username == "root" && password == "pwd"
 }
