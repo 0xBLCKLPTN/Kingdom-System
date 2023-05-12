@@ -1,6 +1,7 @@
 use salvo::prelude::*;
 use crate::models::*;
 use crate::middleware::redis_getter::RedisGetter;
+use serde_json::Value;
 
 #[handler]
 pub async fn health_checker_handler(res: &mut Response, ctrl: &mut FlowCtrl) {
@@ -9,6 +10,10 @@ pub async fn health_checker_handler(res: &mut Response, ctrl: &mut FlowCtrl) {
 
 #[handler]
 pub async fn teachers(res: &mut Response, ctrl: &mut FlowCtrl, depot: &mut Depot) {
-    let list_of_teachers = depot.obtain::<RedisGetter>().unwrap().get_data("Teacher");
-    res.render(Json(Teacher { name: "Daniil".to_string() }))
+    let mut conn = depot.obtain::<RedisGetter>().unwrap();
+    let list_of_teachers: String = conn.get_data("teachers");
+
+    let mut json_object_of_teachers: Value = serde_json::from_str(&list_of_teachers).unwrap();
+    println!("{}", list_of_teachers);
+    res.render(Json(json_object_of_teachers));
 }

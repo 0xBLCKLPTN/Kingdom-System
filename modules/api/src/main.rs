@@ -8,7 +8,11 @@ use salvo::prelude::*;
 use repos::{
     public::{
         health_checker_handler,
-        teachers
+        teachers,
+    },
+    operator::{
+        set_new_teacher,
+        edit_teacher,
     },
     auth::{login, self},
 };
@@ -47,10 +51,24 @@ fn router_creator() -> Router {
                     Router::with_path("public")
                         .push(
                             Router::with_path("teachers")
-                                .hoop(auth_handler())
                                 .hoop(affix::inject(redis_getter::RedisGetter::new()))
                                 .get(teachers)
                         )
+                )
+                .push(
+                    Router::with_path("operator")
+                    .hoop(auth_handler())
+                    .hoop(
+                        affix::inject(redis_getter::RedisGetter::new())
+                    )    
+                    .push(
+                        Router::with_path("set_teacher")    
+                        .post(set_new_teacher)
+                    )
+                    .push(
+                        Router::with_path("edit-teacher")
+                        .post(edit_teacher)
+                    )
                 )
         )
 }

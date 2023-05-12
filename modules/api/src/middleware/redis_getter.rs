@@ -1,9 +1,14 @@
 extern crate r2d2_redis;
 
-use r2d2_redis::{r2d2, RedisConnectionManager};
-use r2d2_redis::redis::Commands;
+use r2d2_redis::{RedisConnectionManager};
+//use r2d2_redis::redis::{Commands};
+//use r2d2_redis::redis::RedisError;
 
-type Pool = r2d2::Pool<RedisConnectionManager>;
+extern crate redis;
+use redis::{Client, JsonCommands, Connection, ConnectionLike, RedisError};
+use r2d2;
+
+type Pool = r2d2::Pool<Client>;
 
 #[derive(Clone)]
 pub struct RedisGetter {
@@ -12,17 +17,24 @@ pub struct RedisGetter {
 
 impl RedisGetter {
     pub fn new() -> Self {
-        let manager = RedisConnectionManager::new("redis://127.0.0.1:6379").unwrap();
+        let client = redis::Client::open("redis://127.0.0.1:6379").unwrap();
         let pool = r2d2::Pool::builder()
-            .build(manager)
+            .build(client)
             .unwrap();
-        Self { pool }
+        Self {pool}
     }
+    
 
-    pub fn get_data(&self, key: &str){
+    
+    pub fn get_data(&self, key: &str) -> String {
         let mut con = self.pool.get().unwrap();
-        let teacher: String = con.get(key).unwrap();
-        println!("{}", teacher);
+        
+        // Json_get currently not work, because it cant find a path? what is path?
+        let result: Result<String, RedisError> = con.json_get(key, "$");
+        match result {
+            Ok(_) => return result.unwrap(),
+            Err(_) => return "Cannot find teacher".to_string(),
+        }        
     }
 }
 
