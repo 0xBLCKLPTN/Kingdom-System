@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/site/static/css/main.b371f8e6.css",
-    "main.js": "/site/static/js/main.1d1d1883.js",
-    "index.html": "/site/index.html",
-    "main.b371f8e6.css.map": "/site/static/css/main.b371f8e6.css.map",
-    "main.1d1d1883.js.map": "/site/static/js/main.1d1d1883.js.map"
+    "main.css": "/Kingdom-System/static/css/main.b371f8e6.css",
+    "main.js": "/Kingdom-System/static/js/main.1d1d1883.js",
+    "index.html": "/Kingdom-System/index.html",
+    "main.b371f8e6.css.map": "/Kingdom-System/static/css/main.b371f8e6.css.map",
+    "main.1d1d1883.js.map": "/Kingdom-System/static/js/main.1d1d1883.js.map"
   },
   "entrypoints": [
     "static/css/main.b371f8e6.css",
