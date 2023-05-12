@@ -57,7 +57,7 @@ services:
       - default
 
   redis:
-    image: "redis:6.2-alpine"
+    image: "redislabs/rejson"
     container_name: 'RedisCacheServer'
     restart: always
     ports:
