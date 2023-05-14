@@ -1,5 +1,4 @@
-
-
+// 
 pub struct AMQPPublisher;
 
 impl AMQPPublusher {
