@@ -1,0 +1,33 @@
+{
+    "version": "0.1.0",
+    "author": "blcklptn",
+    "repository": "https://github.com/SicDevelop/Kingdom-System",
+    "modules": {
+        "redis": {
+            "username": "root",
+            "password": "root",
+            "host": "localhost",
+            "port": "6574:5432",
+            "prefix": "redis://"
+        },
+        "postgresql": {
+            "username": "root",
+            "password": "root",
+            "host": "localhost",
+            "port": "5432:5432",
+            "base_name": "testbase"
+        },
+        "rabbit_mq": {
+            "username": "root",
+            "password": "root",
+            "port": "5782:5782",
+            "host": "localhost"
+        },
+        "mongodb": {
+            "username": "root",
+            "password": "root",
+            "host": "localhost",
+            "port": "1234:1234"
+        }
+    }
+}
