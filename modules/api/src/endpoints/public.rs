@@ -1,5 +1,5 @@
 use salvo::prelude::*;
-use crate::models::{BasicResponse};
+use crate::models::another_models::{BasicResponse};
 
 #[handler]
 pub async fn health_checker(res: &mut Response, ctrl: &mut FlowCtrl) {

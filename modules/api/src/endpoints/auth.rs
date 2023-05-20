@@ -1,45 +1,52 @@
 use jsonwebtoken::EncodingKey;
 use salvo::prelude::*;
-use crate::models::*;
+use crate::models::{
+    user_models::NewUser,
+    another_models::{BasicResponse, AuthenticateCredentials},
+    token_models::{TokenClaims, Token},
+};
 use salvo::http::{Method, StatusError};
 use time::{Duration, OffsetDateTime};
-use crate::middlewares::mongo_crud::MongoController;
+use crate::middlewares::mongo_user_controller::MongoUserController;
 
 // JWT secret for encode/decode.
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
 #[handler]
-pub async fn register(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> &'static str {
+pub async fn register(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
     if req.method() == Method::POST {
-        let mut connection_base = depot.obtain::<MongoController>();
+        let mut connection_base = depot.obtain::<MongoUserController>();
         let result = match req.parse_json::<NewUser>().await.unwrap() {
-            NewUser => connection_base.expect("Cannot register user!").register_user(NewUser).await,
+            User => connection_base.expect("Cannot register user!").register_user(User).await,
             ParseError => false,
         };
-        return "Hello World!";
+
+        if !result {
+            res.render(Json( BasicResponse { status: "Error".to_string(), message: "Username already taken!".to_string()}))
+        } else {
+            res.render(Json(BasicResponse{status: "Done".to_string(), message: "You're welcome to our Kingdom!".to_string()}))
+    
+        }
     }
-    return "Hello World!";
 
 }
+
 
 // Basic api handler http://127.0.0.1:5800/auth/login. It generates JWT
 // but i will rewrite this function for add some features - refresh token and uuid/role.
 #[handler]
 pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> anyhow::Result<()> {
-    let mut collection_base = depot.obtain::<MongoController>();
-
+    let mut collection_base = depot.obtain::<MongoUserController>();
     if req.method() == Method::POST {
-        let (username, password) = (
-            req.form::<String>("username").await.unwrap_or_default(),
-            req.form::<String>("password").await.unwrap_or_default(),
-        );
-        if !collection_base.expect("SOME_REASON").validate_user(&username, &password).await {
-            res.render(Text::Html(LOGIN_HTML));
+        let credentials = req.parse_json::<AuthenticateCredentials>().await.unwrap();
+
+        if !collection_base.expect("SOME_REASON").validate_user(&credentials.username, &credentials.password).await {
+            res.render(Json(BasicResponse { status: "Error".to_string(), message: "Incorrect username or password!".to_string()}));
             return Ok(());
         }
         let exp = OffsetDateTime::now_utc() + Duration::days(14);
         let claim = TokenClaims {
-            username,
+            username: credentials.username,
             exp: exp.unix_timestamp(),
         };
 
