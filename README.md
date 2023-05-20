@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/github/repo-size/blcklptn/Kingdom-System?style=plastic"/>
   <img src="https://img.shields.io/github/license/blcklptn/Kingdom-System?style=plastic"/>
   <img src="https://img.shields.io/github/v/release/blcklptn/Kingdom-System?style=plastic"/>
+  <img src="https://tokei.rs/b1/github/0xBLCKLPTN/Kingdom-System"/>
 </div>
 
 <div align="center">
