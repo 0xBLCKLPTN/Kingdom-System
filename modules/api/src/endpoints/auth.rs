@@ -3,6 +3,7 @@ use salvo::prelude::*;
 use crate::models::*;
 use salvo::http::{Method, StatusError};
 use time::{Duration, OffsetDateTime};
+use crate::middlewares::mongo_crud::MongoController;
 
 // JWT secret for encode/decode.
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
@@ -10,6 +11,11 @@ const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 #[handler]
 pub async fn register(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> &'static str {
     if req.method() == Method::POST {
+        let mut connection_base = depot.obtain::<MongoController>();
+        let result = match req.parse_json::<NewUser>().await.unwrap() {
+            NewUser => connection_base.expect("Cannot register user!").register_user(NewUser).await,
+            ParseError => false,
+        };
         return "Hello World!";
     }
     return "Hello World!";
@@ -20,17 +26,17 @@ pub async fn register(req: &mut Request, depot: &mut Depot, res: &mut Response, 
 // but i will rewrite this function for add some features - refresh token and uuid/role.
 #[handler]
 pub async fn login(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> anyhow::Result<()> {
+    let mut collection_base = depot.obtain::<MongoController>();
+
     if req.method() == Method::POST {
         let (username, password) = (
             req.form::<String>("username").await.unwrap_or_default(),
             req.form::<String>("password").await.unwrap_or_default(),
         );
-
-        if !validate(&username, &password) {
+        if !collection_base.expect("SOME_REASON").validate_user(&username, &password).await {
             res.render(Text::Html(LOGIN_HTML));
             return Ok(());
         }
-
         let exp = OffsetDateTime::now_utc() + Duration::days(14);
         let claim = TokenClaims {
             username,

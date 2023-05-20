@@ -10,8 +10,6 @@ pub async fn health_checker(res: &mut Response, ctrl: &mut FlowCtrl) {
     )
 }
 
-
-
 #[handler]
 pub async fn get_all_schedule(res: &mut Response, ctrl: &mut FlowCtrl, depot: &mut Depot) -> &'static str {
     "hello World!"

@@ -1,23 +1,23 @@
-
+use crate::models::TokenClaims;
+use crate::middlewares::mongo_crud::MongoController;
 use crate::endpoints::{
     public::health_checker,
     teachers::{
-        get_all_teachers,
-        get_teacher_by,
+        get_all_teachers, get_teacher_by,
     },
     schedules::{
-        get_all_schedules,
-        get_schedule_by,
+        get_all_schedules, get_schedule_by,
     },
     auth::{
-        login,
+        login, register
     }
 };
-use salvo::prelude::*;
+
 use jsonwebtoken::{self, EncodingKey};
+use salvo::prelude::*;
 use salvo::http::{Method, StatusError};
 use salvo::jwt_auth::QueryFinder;
-use crate::models::TokenClaims;
+use salvo::affix;
 
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
 
@@ -27,13 +27,14 @@ fn auth_handler() -> JwtAuth<TokenClaims> {
         .response_error(true)
 }
 
-pub fn generate_default_router() -> Router {
+pub async fn generate_default_router() -> Router {
     Router::new()
         .get(health_checker)
+        .hoop(affix::inject(MongoController::new().await.unwrap()))
         .push(
             Router::with_path("auth")
                 .push(Router::with_path("login").handle(login))
-                .push(Router::with_path("register"))
+                .push(Router::with_path("register").post(register))
             )
             .push(
                 Router::with_path("api")

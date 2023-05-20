@@ -16,4 +16,5 @@ tracing-subscriber = "0.3.17"
 time = "0.3.21"
 mongodb = { version ="2.5.0", features = ["tokio-runtime"] } 
 r2d2 = "0.8.10"
+bson = "2.6.1"
 
