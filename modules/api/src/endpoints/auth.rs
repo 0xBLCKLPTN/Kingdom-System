@@ -3,10 +3,18 @@ use salvo::prelude::*;
 use crate::models::*;
 use salvo::http::{Method, StatusError};
 use time::{Duration, OffsetDateTime};
-use crate::middleware::redis_getter;
 
 // JWT secret for encode/decode.
 const SECRET_KEY: &str = "MYSUPERSECRETKEY";
+
+#[handler]
+pub async fn register(req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl) -> &'static str {
+    if req.method() == Method::POST {
+        return "Hello World!";
+    }
+    return "Hello World!";
+
+}
 
 // Basic api handler http://127.0.0.1:5800/auth/login. It generates JWT
 // but i will rewrite this function for add some features - refresh token and uuid/role.
