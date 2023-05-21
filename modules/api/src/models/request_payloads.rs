@@ -48,7 +48,7 @@ pub struct UpdateGroup {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct InsertSchedule {
     pub schedule_data: AbstractScheduleData<String>,
-    pub lessons: Vec<AbstractLessonForScheduleData<i64>>,
+    pub lessons: Vec<AbstractLessonForScheduleData<i64, String>>,
 }
 
 #[allow(non_snake_case)]

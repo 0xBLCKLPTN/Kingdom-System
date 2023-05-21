@@ -36,5 +36,5 @@ pub struct ScheduleDatabase {
     pub id: ObjectId,
     pub group_id: String,
     pub date: String,
-    pub lessons: Vec<AbstractLessonForScheduleData<i64>>
+    pub lessons: Vec<AbstractLessonForScheduleData<i64, String>>
 }

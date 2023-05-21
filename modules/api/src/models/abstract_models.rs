@@ -24,9 +24,9 @@ pub struct AbstractLessonData<S> {
 
 #[allow(non_snake_case)]
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct AbstractLessonForScheduleData<I> {
+pub struct AbstractLessonForScheduleData<I, S> {
     pub lesson_number: I,
-    pub lesson_data: AbstractLessonData<String>,
+    pub lesson_data: AbstractLessonData<S>,
 }
 
 
