@@ -7,7 +7,7 @@ use mongodb::bson::{ self, oid::ObjectId };
 pub struct GroupDatabase {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub group_data: AbstractGroupData,
+    pub group_data: AbstractGroupData<String>,
 }
 
 #[allow(non_snake_case)]
@@ -15,7 +15,7 @@ pub struct GroupDatabase {
 pub struct LessonDatabase {
     #[serde(rename="_id")]
     pub id: ObjectId,
-    pub lesson_data: AbstractLessonData
+    pub lesson_data: AbstractLessonData<String>
 }
 
 #[allow(non_snake_case)]
@@ -23,7 +23,7 @@ pub struct LessonDatabase {
 pub struct UserDatabase {
     #[serde(rename = "_id")]
     pub id: ObjectId,
-    pub user_data: AbstractUserData,
+    pub user_data: AbstractUserData<String>,
     pub username: String,
     pub password: String,
     pub role: String,
@@ -36,5 +36,5 @@ pub struct ScheduleDatabase {
     pub id: ObjectId,
     pub group_id: String,
     pub date: String,
-    pub lessons: Vec<AbstractLessonForScheduleData>
+    pub lessons: Vec<AbstractLessonForScheduleData<i64>>
 }

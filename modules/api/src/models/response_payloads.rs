@@ -20,6 +20,6 @@ pub struct UserResponse {
 #[allow(non_snake_case)]
 #[derive(Serialize, Deserialize)]
 pub struct TokenResponse {
-    pub access_token: AbstractTokenData,
-    pub refresh_token: AbstractTokenData,
+    pub access_token: AbstractTokenData<String, i64>,
+    pub refresh_token: AbstractTokenData<String, i64>,
 }
