@@ -15,11 +15,9 @@
 
 ![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/screenshots/AboutProject.svg)
 
----
 
 ![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/screenshots/Important.svg)
 
----
 
 ![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/screenshots/WhyRust.svg)
 
