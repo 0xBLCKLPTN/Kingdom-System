@@ -2,22 +2,21 @@ use mongodb::{ Client, Collection, Database };
 use mongodb::options::{ ClientOptions, FindOptions };
 use mongodb::bson::{ self, doc, to_document, Document };
 use mongodb::bson::oid::ObjectId;
-use mongodb::error:Error as MongoError;
+use mongodb::error::Error as MongoError;
 
-use serde::{ Deserialize, Serialize };
+use serde::{Serialize, Deserialize};
 use std::str::FromStr;
 use futures::TryStreamExt;
 use std::fmt::Debug;
 
 use crate::models::database_models::*;
 
-
 #[derive(Clone, Debug)]
 pub struct MongoController<T> {
-    collection: Collection<T>,
+    pub collection: Collection<T>,
 }
 
-pub async fn get_database() -> Result<Database, MongoError> {
+async fn get_database() -> Result<Database, MongoError> {
     let mut client_options = ClientOptions::parse("mongodb://localhost:27017").await?;
     client_options.app_name = Some("Kingdom-Base".to_string());
 
@@ -27,16 +26,29 @@ pub async fn get_database() -> Result<Database, MongoError> {
     Ok(database)
 }
 
+
 impl<T> MongoController<T>
-where T: Debug + Clone,
+where T: Debug + Clone + Send + Sync,
 {
     pub async fn new(collection_name: &str) -> Result<MongoController<T>, MongoError> {
         let database = get_database().await?;
-        let collection = database.collection::<T>(collection_name);
+        let collection: Collection<T> = database.collection::<T>(collection_name);
         println!("✅ Mongo {} Controller connected successfully", collection_name);
         Ok( MongoController { collection } )
     }
+    
+    pub async fn add_docuemnt<S>(&self, collection: S) {
+    }
+
+    pub async fn update_document(&self) {
+        todo!();
+    }
+    pub async fn delete_document(&self) {
+        todo!();
+    }
+
+    pub async fn check_on_document(&self) {
+        todo!();
+    }
 
 }
-
-

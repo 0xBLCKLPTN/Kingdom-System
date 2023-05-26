@@ -1,5 +1,5 @@
-pub mod operator;
+pub mod authenticate;
 pub mod public;
 pub mod students;
-pub mod technics;
-pub mod auth;
+pub mod debug;
+pub mod operator;
