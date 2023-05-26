@@ -6,7 +6,6 @@ use crate::{
 };
 use futures::TryStreamExt;
 
-
 pub async fn get_all_users(db: Data<MongoController<UserDatabase>>) -> Result<impl Responder> {
     let mut cursor = db.collection.find(None, None).await.unwrap();
     let mut result: Vec<UserDatabase> = Vec::new();
@@ -16,3 +15,4 @@ pub async fn get_all_users(db: Data<MongoController<UserDatabase>>) -> Result<im
     }
     Ok(Json(result))
 }
+
