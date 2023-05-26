@@ -5,7 +5,6 @@ use std::fs;
 use structopt::StructOpt;
 
 
-
 #[derive(StructOpt, Debug, Clone)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
 pub struct Opt {
