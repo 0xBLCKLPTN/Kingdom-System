@@ -18,7 +18,8 @@ fn authenticate_router(cfg: &mut web::ServiceConfig) {
 
 fn public(cfg: &mut web::ServiceConfig) {
     cfg.service(
-        web::resource("/health").route(web::get().to(health))
+        web::scope("/public")
+            .service(web::resource("/health").route(web::get().to(health)))
     );
 }
 
@@ -54,7 +55,7 @@ fn v1(cfg: &mut web::ServiceConfig) {
         .configure(student)
         .configure(operator)
         .configure(debug_router)
-        .service(web::resource("/public").route(web::get().to(health)))
+        .configure(public)
     );
 }
 
