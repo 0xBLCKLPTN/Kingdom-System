@@ -24,6 +24,6 @@ pub fn configure(conf: &str) -> Result<Config>{
     let filepath = conf.to_owned();
     let contents = fs::read_to_string(filepath).expect("Couldn't find or load file.");
     
-    let mut config: Config = serde_json::from_str(&contents)?;
+    let config: Config = serde_json::from_str(&contents)?;
     Ok(config)
 }

@@ -1,4 +1,4 @@
-use actix_web::{ App, web };
+use actix_web::web;
 use crate::endpoints::{
     public::{health},
     authenticate::{sign_in, sign_up},

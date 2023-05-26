@@ -1,15 +1,7 @@
 use mongodb::{ Client, Collection, Database };
-use mongodb::options::{ ClientOptions, FindOptions };
-use mongodb::bson::{ self, doc, to_document, Document };
-use mongodb::bson::oid::ObjectId;
+use mongodb::options::{ ClientOptions };
 use mongodb::error::Error as MongoError;
-
-use serde::{Serialize, Deserialize};
-use std::str::FromStr;
-use futures::TryStreamExt;
 use std::fmt::Debug;
-
-use crate::models::database_models::*;
 
 #[derive(Clone, Debug)]
 pub struct MongoController<T> {
@@ -35,20 +27,6 @@ where T: Debug + Clone + Send + Sync,
         let collection: Collection<T> = database.collection::<T>(collection_name);
         println!("✅ Mongo {} Controller connected successfully", collection_name);
         Ok( MongoController { collection } )
-    }
-    
-    pub async fn add_docuemnt<S>(&self, collection: S) {
-    }
-
-    pub async fn update_document(&self) {
-        todo!();
-    }
-    pub async fn delete_document(&self) {
-        todo!();
-    }
-
-    pub async fn check_on_document(&self) {
-        todo!();
     }
 
 }

@@ -5,7 +5,7 @@ use crate::{
     MongoController,
 };
 
-use mongodb::bson::{self, oid::ObjectId, doc, to_document, Document};
+use mongodb::bson::{oid::ObjectId};
 
 pub async fn sign_in(db: Data<MongoController<UserDatabase>>, credentials: Json<SignInCredentials>) -> Result<impl Responder> {
     Ok(web::Json(DefaultResponse { status: "Done!", message: "Welcome back!"}))

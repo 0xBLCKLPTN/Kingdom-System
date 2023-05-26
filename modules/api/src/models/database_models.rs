@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use mongodb::bson::{ self, oid::ObjectId };
+use mongodb::bson::oid::ObjectId;
 use crate::models::abstract_models::*;
 
 
