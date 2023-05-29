@@ -1,0 +1,3 @@
+[submodule "modules/Memore"]
+	path = modules/Memore
+	url = https://github.com/0xBLCKLPTN/Memore.git
