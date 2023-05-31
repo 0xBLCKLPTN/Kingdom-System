@@ -1,3 +1,15 @@
 [submodule "modules/Memore"]
 	path = modules/Memore
 	url = https://github.com/0xBLCKLPTN/Memore.git
+[submodule "plugins/Box"]
+	path = plugins/Box
+	url = https://github.com/0xBLCKLPTN/Box
+[submodule "plugins/Memore"]
+	path = plugins/Memore
+	url = https://github.com/0xBLCKLPTN/Memore
+[submodule "plugins/Controller"]
+	path = plugins/Controller
+	url = https://github.com/0xBLCKLPTN/Controller
+[submodule "plugins/Logfrem"]
+	path = plugins/Logfrem
+	url = https://github.com/0xBLCKLPTN/Logfrem
