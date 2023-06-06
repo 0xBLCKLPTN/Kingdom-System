@@ -22,3 +22,4 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+  * OpenAPI Swagger: https://app.swaggerhub.com/apis/BL4CKL1PT0N/Scheduler/1.0.0
