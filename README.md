@@ -1,6 +1,6 @@
 <div align='center'>
   <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/illustrations/black/Kingdom-System.svg#gh-light-mode-only">
-  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/illustrations/black/Kingdom-System.svg#gh-dark-mode-only">
+  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/illustrations/white/Kingdom-System.svg#gh-dark-mode-only">
 </div>
 
 <div align="center">
