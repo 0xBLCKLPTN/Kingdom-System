@@ -3,6 +3,8 @@
  <img src='https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/illustrations/white/Kingdom-Schedule.svg#gh-dark-mode-only' />
 </div>
 
+---
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
