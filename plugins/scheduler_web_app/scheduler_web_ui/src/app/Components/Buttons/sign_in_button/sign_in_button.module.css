@@ -1,0 +1,8 @@
+.main {
+    height: 40px;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: var(--Accent, #5445FF);
+    color: var(--Background-White, #FFF);
+}

@@ -1,0 +1,52 @@
+.main {
+    background-color: var(--Background-gray, #F8F8F8);
+}
+
+.page_title {
+    color: var(--Dark-gray, #1C1C1C);
+    /* Heading / H2 - 36 */
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 48px; /* 133.333% */
+}
+
+.for_students {
+    color: var(--Gray, #969696);
+    /* Paragraph / P1 - 20 */
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+}
+
+.about_site {
+    color: var(--Gray, #969696);
+    text-align: right;
+    /* Paragraph / P1 - 20 */
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.content_data {
+    display: flex;
+}

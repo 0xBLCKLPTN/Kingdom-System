@@ -1,0 +1,61 @@
+/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/auth/page.module.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************/
+.page_main__FrLIC {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6rem;
+  min-height: 100vh;
+}
+
+.page_title__xQbsk {
+  color: var(--Dark-gray, #1C1C1C);
+  font-family: Inter;
+}
+
+.page_buttons__Y0DKg {
+  margin-left: 15%;
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  gap: 10%;
+}
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/Components/Inputs/credentials_inputs/credentials_inputs.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************/
+.credentials_inputs_main__nNJ3P {
+    display: flex;
+    flex-direction: column;
+    margin-top: 12px;
+}
+
+.credentials_inputs_input__ai5Wy {
+    margin-top: 12px;
+    height: 30px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--Stroke-gray, #E8E8E8);
+}
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/Components/Buttons/sign_in_button/sign_in_button.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************/
+.sign_in_button_main__SMCXE {
+    height: 40px;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: var(--Accent, #5445FF);
+    color: var(--Background-White, #FFF);
+}
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/Components/Buttons/sign_up_button/sign_up_button.module.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************/
+.sign_up_button_main__NrZ_1 {
+    height: 40px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--Stroke-gray, #E8E8E8);
+    background: var(--Background-White, #FFF);
+}
