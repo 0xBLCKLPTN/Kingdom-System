@@ -1,0 +1,122 @@
+.main {
+    background-color: var(--Background-gray, #F8F8F8);
+}
+
+.page_title {
+    color: var(--Dark-gray, #1C1C1C);
+    /* Heading / H2 - 36 */
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 48px; /* 133.333% */
+}
+
+.for_students {
+    color: var(--Gray, #969696);
+    /* Paragraph / P1 - 20 */
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+}
+
+.about_site {
+    color: var(--Gray, #969696);
+    text-align: right;
+    /* Paragraph / P1 - 20 */
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+.content {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.content_data {
+    display: flex;
+
+}
+
+.main_schedule_block {
+    padding: 36px;
+    width: 100%;
+    height: 70vh;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
+}
+
+.select_course {
+    padding-left: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 8px;
+    height: 36px;
+    width: 91px;
+    -webkit-appearance:none;
+    border-radius: 12px;
+    border: 1px solid var(--Stroke-gray, #E8E8E8);
+    background: var(--Background-White, #FFF);
+
+}
+
+.select_course:focus {
+    outline: none;
+}
+
+.date_select {
+    padding-left: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 8px;
+    height: 36px;
+    width: 118px;
+    -webkit-appearance:none;
+    border-radius: 12px;
+    border: 1px solid var(--Stroke-gray, #E8E8E8);
+    background: var(--Background-White, #FFF);
+}
+
+.block_header {
+    display: flex;
+    gap: 12px;
+}
+
+.find_by_group {
+    padding-left: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 8px;
+    border-radius: 12px;
+    width: 238px;
+    border: 1px solid var(--Stroke-gray, #E8E8E8);
+    background: var(--Background-White, #FFF);
+}
+
+.primary_button {
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    align-items: center;
+    border-radius: 12px;
+    background: var(--Accent, #5445FF);
+}
+
+.schedule {
+    margin-top: 24px;
+}

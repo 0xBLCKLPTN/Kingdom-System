@@ -1,0 +1,55 @@
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./app/dashboard/dashboard.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
+.dashboard_main__6jQ_n {
+    background-color: var(--Background-gray, #F8F8F8);
+}
+
+.dashboard_page_title__v0m1T {
+    color: var(--Dark-gray, #1C1C1C);
+    /* Heading / H2 - 36 */
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 48px; /* 133.333% */
+}
+
+.dashboard_for_students__7XdKy {
+    color: var(--Gray, #969696);
+    /* Paragraph / P1 - 20 */
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+}
+
+.dashboard_about_site__aEraj {
+    color: var(--Gray, #969696);
+    text-align: right;
+    /* Paragraph / P1 - 20 */
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+}
+
+.dashboard_header__IYRHh {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard_content__AIu5c {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.dashboard_content_data__1D8GR {
+    display: flex;
+}
