@@ -1,0 +1,135 @@
+.tasks_block {
+    border-radius: 20px;
+    padding-bottom: 24px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    width: 387px;
+    height: 124px;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
+    display: flex;
+    justify-content: space-between;
+}
+
+.tasks_block_h {
+    color: var(--Dark-gray, #1C1C1C);
+    /* Heading / H2 - 36 */
+    font-family: Inter;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 48px; /* 133.333% */
+}
+
+.tasks_block_p {
+    color: var(--Gray, #969696);
+    /* Paragraph / P2 - 16 */
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+}
+
+.tasks_data {
+    display: flex;
+    flex-direction: column;
+}
+
+.view_all {
+    height: 36px;
+    width: 138px;
+
+    display: inline-flex;
+    padding: 8px 8px 8px 16px;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px;
+    border: 1px solid var(--Stroke-gray, #E8E8E8);
+    background: var(--Background-White, #FFF);
+
+    color: var(--Dark-gray, #1C1C1C);
+    text-align: center;
+    /* Heading / H6 - 13 */
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; /* 153.846% */
+}
+
+.tasks_modal {
+    margin:0 auto;
+    min-height: 100vw;
+    width: 100%;
+    /*width: 798px*/;
+    /*height: 742px*/;
+    border: none;
+    background: rgba(0, 0, 0, 0.10);
+    /*background: var(--Background-White, #FFF);*/
+    outline: false;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.tasks_modal:focus {
+    outline: 0;
+}
+
+.inModalContent {
+    margin:0 auto;
+    margin-top: 10vh;
+    width: 798px;
+    height: 742px;
+    border: none;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
+    outline: false;
+
+    display: flex;
+    flex-direction: column;
+    padding-left: 23px;
+    padding-top: 24px;
+    padding-right: 23px;
+    padding-bottom: 24px;
+}
+
+.modal_header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.closeModalButton {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background-color: white;
+}
+
+.modal_tasks {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow-y: scroll;
+}
+
+.modal_tasks p {
+    color: var(--Dark-gray, #1C1C1C);
+    /* Paragraph / P2 - 16 */
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+}
+
+.modal_task {
+    margin-top: 8px;
+    height: 30px;
+    border-bottom: 1px solid #E8E8E8;
+}

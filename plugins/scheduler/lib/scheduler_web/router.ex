@@ -2,6 +2,7 @@ defmodule SchedulerWeb.Router do
   use SchedulerWeb, :router
 
   pipeline :api do
+    plug CORSPlug, origin: "*"
     plug :accepts, ["json"]
   end
 

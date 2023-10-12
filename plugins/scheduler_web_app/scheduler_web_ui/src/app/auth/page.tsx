@@ -4,7 +4,6 @@ import CredentialsInputs from '../Components/Inputs/credentials_inputs/Credentia
 import SignInButton from '../Components/Buttons/sign_in_button/SignInButton'
 import SignUpButton from '../Components/Buttons/sign_up_button/SignUpButton'
 
-
 export default function Auth() {
   return (
     <main className={styles.main}>

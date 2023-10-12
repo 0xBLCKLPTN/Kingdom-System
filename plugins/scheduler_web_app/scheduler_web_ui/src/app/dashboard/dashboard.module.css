@@ -45,8 +45,52 @@
     flex-direction: column;
     padding-left: 10%;
     padding-right: 10%;
+    width: 100%;
+    height: 100%;
 }
 
 .content_data {
     display: flex;
+    margin-top: 36px;
+    width: 100%;
+    height: 100%;
+    gap: 24px;
+}
+
+.calendar {
+    width: 798px;
+    height: 742px;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
+}
+
+.title {
+    margin-left: 24px;
+}
+
+.prepods_view {
+    width: 387px;
+    height: 124px;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
+}
+
+.right_column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.tasks {
+    width: 387px;
+    height: 124px;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
+}
+
+.schedules {
+    width: 387px;
+    height: 446px;
+    border-radius: 20px;
+    background: var(--Background-White, #FFF);
 }
