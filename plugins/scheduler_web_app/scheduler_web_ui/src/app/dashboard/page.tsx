@@ -4,7 +4,7 @@ import styles from './dashboard.module.css';
 import GroupsBlock from '../Components/Blocks/groups_dashboard_block/GroupsBlock';
 import TeachersBlock from '../Components/Blocks/teachers_dashboard_block/TeachersBlock';
 import TasksBlock from '../Components/Blocks/tasks_dashboard_block/TasksBlocks';
-
+import BellsBlock from '../Components/Blocks/bells_dashboard_block/BellsBlock';
 import Modal from 'react-modal';
 import { useState } from 'react';
 
@@ -30,9 +30,7 @@ export default function Dashboard() {
                   <TeachersBlock/>
                   <TasksBlock/>
 
-                  <div className={styles.schedules}>
-
-                  </div>
+                  <BellsBlock/>
                   
                 </div>
                 
