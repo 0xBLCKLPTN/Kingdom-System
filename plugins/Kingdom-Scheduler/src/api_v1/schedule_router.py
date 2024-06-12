@@ -3,6 +3,8 @@ from dataspace.dataspace import MongoSpace, Dataspace
 from models import rr_models
 from core.types import *
 import json
+from .users_router import JWTBearer
+
 router = APIRouter(
     prefix='/api/v1/schedule'
 )
@@ -33,11 +35,11 @@ def create_group_dict(group_id: str) -> dict:
         'budget': group.budget
     }
 
-@router.get('/get_schedule')
+@router.get('/get_schedule', )
 async def get_schedule(date: str) -> object:
     return await ms.get_schedule(date)
 
-@router.post('/create_schedule')
+@router.post('/create_schedule', dependencies=[Depends(JWTBearer())])
 async def create_schedule(schedule: rr_models.CreateSchedule) -> BoxedResult[rr_models.Result]:
     schedule = {
         'date': schedule.date,
@@ -53,12 +55,8 @@ async def create_schedule(schedule: rr_models.CreateSchedule) -> BoxedResult[rr_
     print(schedule)
     await ms.add_schedule(schedule)
     return rr_models.Result(result='schedule created!')
-@router.post('/get-schedules')
-async def get_schedules() -> object:
-    pass
 
-
-@router.post('/add-lesson')
+@router.post('/add-lesson', dependencies=[Depends(JWTBearer())])
 async def add_lesson(lesson: rr_models.LessonRequest) -> BoxedResult[rr_models.Result]:
     return dspc.addLesson(lesson)
 

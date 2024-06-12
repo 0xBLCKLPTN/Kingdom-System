@@ -3,7 +3,7 @@
 	url = https://github.com/0xBLCKLPTN/Memore.git
 [submodule "plugins/Box"]
 	path = plugins/Box
-	url = https://github.com/0xBLCKLPTN/Box
+	url = https://github.com/0xBLCKLPTN/Box.git
 [submodule "plugins/Memore"]
 	path = plugins/Memore
 	url = https://github.com/0xBLCKLPTN/Memore
@@ -13,3 +13,9 @@
 [submodule "plugins/Logfrem"]
 	path = plugins/Logfrem
 	url = https://github.com/0xBLCKLPTN/Logfrem
+[submodule "plugins/Alice-Database"]
+	path = plugins/Alice-Database
+	url = https://github.com/0xBLCKLPTN/Alice-Database.git
+[submodule "plugins/MemoreDB"]
+	path = plugins/MemoreDB
+	url = https://github.com/0xBLCKLPTN/MemoreDB.git
