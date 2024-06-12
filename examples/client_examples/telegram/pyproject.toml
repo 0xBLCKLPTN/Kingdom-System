@@ -2,14 +2,13 @@
 name = "telegram"
 version = "0.1.0"
 description = ""
-authors = ["Daniil Ermolaev <blcklptn@icloud.com>"]
-license = "GPL-3.0"
+authors = ["Two Faced Janus. <blcklptn@icloud.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-aiogram = "^2.25.1"
-pydantic = "^1.10.8"
+python = "^3.12"
+aiogram = "^3.7.0"
+requests = "^2.32.3"
 
 
 [build-system]

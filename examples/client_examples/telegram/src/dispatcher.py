@@ -1,18 +1,13 @@
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-from core.config import settings
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram import Bot, types, Dispatcher
 
 # Хранение данных в оперативной памяти
-storage = MemoryStorage()
+#storage = MemoryStorage()
 
 # Инициализация aiogram бота.
-bot = Bot(token=settings.BOT_TOKEN)
+bot = Bot(token="7370272389:AAFRtINGHUUUxa8ctosfAFVLvMpVOBbVsdY")
 
 # Инициализация диспатчера
-dp = Dispatcher(bot, storage=storage)
+dp = Dispatcher()
 
 # Добавление логирования в диспатчер
-dp.middleware.setup(LoggingMiddleware())
+#dp.middleware.setup(LoggingMiddleware())

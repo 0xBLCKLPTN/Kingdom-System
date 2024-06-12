@@ -1,5 +1,9 @@
-from dispatcher import *
+from dispatcher import dp, bot
 from frontend import handlers
+import asyncio
+
+async def main():
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    asyncio.run(main())
