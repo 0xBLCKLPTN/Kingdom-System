@@ -43,4 +43,4 @@ def get_today_schedule():
 
     return text
 
-get_today_schedule()
+
