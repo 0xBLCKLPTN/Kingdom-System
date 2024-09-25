@@ -9,10 +9,13 @@ pkgs.mkShell {
       pkg-config
       bazel
       helix
+      clang
     ];
     # Всякие библиотечные зависимости
     buildInputs = with pkgs; [
        openssl
        zlib
+       libiconv
+       coreutils
     ];
 }

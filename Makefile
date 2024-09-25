@@ -10,3 +10,7 @@ bc:
 # bazel clean async
 bca:
 	bazel clean --async
+
+# enter to nix
+etn:
+	nix-shell shell.nix
