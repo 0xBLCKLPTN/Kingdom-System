@@ -11,6 +11,14 @@ bc:
 bca:
 	bazel clean --async
 
+# bazel test alicedb
+bta:
+	bazel test //Plugins/AliceDatabase:rs_test
+
+# bazel build alicedb
+bba:
+	bazel build //Plugins/AliceDatabase:rs_bazel
+
 # enter to nix
 etn:
 	nix-shell shell.nix
