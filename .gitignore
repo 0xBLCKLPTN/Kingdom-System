@@ -24,3 +24,8 @@ Cargo.lock
 
 /target
 /Cargo.lock
+
+bazel-bin
+bazel-Kingdom-System
+bazel-out
+bazel-testlogs
