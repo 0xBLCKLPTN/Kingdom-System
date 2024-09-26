@@ -13,9 +13,12 @@ use remore_db::*;
 
 #[tokio::main]
 async fn main() {
-    //create_log_table();
-    //write_into_file("./LOGDATABASE/logging.alicedb.log".to_string(), "[LOG]=>qweqwe1".to_string());
-    //write_into_file("./LOGDATABASE/logging.alicedb.log".to_string(), "[LOG]=>qweqwe2".to_string());
+    //let k = list_dir(".");
+    //println!("{:#?}", k);
+    create_log_table();
+    //write_into_file("./LOGDATABASE/loggins.alicedb.log".to_string(), "[]")
+    write_into_file("./LOGDATABASE/loggings.alicedb.log".to_string(), "[LOG]=>qweqwe1".to_string());
+    write_into_file("./LOGDATABASE/loggings.alicedb.log".to_string(), "[LOG]=>qweqwe2".to_string());
 
 
     /*
