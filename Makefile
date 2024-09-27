@@ -17,7 +17,7 @@ bta:
 
 # bazel build alicedb
 bba:
-	bazel build //Plugins/AliceDatabase:rs_bazel
+	CARGO_BAZEL_REPIN=true bazel build //Plugins/AliceDatabase:rs_bazel
 
 # enter to nix
 etn:

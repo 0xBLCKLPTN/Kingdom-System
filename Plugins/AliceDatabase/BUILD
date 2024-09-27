@@ -9,8 +9,7 @@ rust_binary(
     # Specifies the source file for the binary.
     srcs = glob([
         "src/*.rs",
-        "src/log_db/**/*.rs",
-        "src/remore_db/**/*.rs",
+        "src/**/*.rs"
     ]),
     aliases = aliases(),
     #proc_macro_deps = all_crate_deps(),
