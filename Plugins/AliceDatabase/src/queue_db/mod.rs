@@ -7,6 +7,12 @@ pub struct Command {
     pub author: String,
 }
 
+impl Command {
+    pub fn new(command: &str, author: &str) -> Self {
+        Command { command: command.to_string(), author: author.to_string() }
+    }
+}
+
 pub struct Queue {
     pub deque: Mutex<VecDeque<Command>>,
 }
