@@ -3,6 +3,7 @@ pub mod configurator;
 pub mod remore_db;
 pub mod fs_manager;
 pub mod log_db;
+pub mod queue_db;
 
 use log_db::*;
 use fs_manager::*;
@@ -11,12 +12,13 @@ use configurator::*;
 use std::env;
 use remore_db::*;
 use std::path::PathBuf;
+use queue_db::{Queue, Command};
 
 #[tokio::main]
-async fn main() {
-    let mut ld = LogDatabase::new(PathBuf::from("./LOGDATABASE"));
-    ld.find_tables();
-    ld.create_table("logs").await;
-    println!("{:#?}", ld);
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let queue = Queue::new();
+    queue.enqueue(Command {command: "new_table: qwe".to_string(), author: "Daniil Ermolaev".to_string() });
+    queue.enqueue(Command {command: "new_table: qwe2".to_string(), author: "Daniil Ermolaev".to_string() });
+    Ok(())
+    
 }
-

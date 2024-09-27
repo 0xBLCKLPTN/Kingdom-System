@@ -29,3 +29,5 @@ bazel-bin
 bazel-Kingdom-System
 bazel-out
 bazel-testlogs
+
+LOGDATABASE

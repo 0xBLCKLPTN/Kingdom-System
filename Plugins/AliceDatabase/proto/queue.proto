@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package queue;
+
+service QueueService {
+    rpc Enqueue(EnqueueRequest) returns (EnqueueResponse);
+    rpc Dequeue(DequeueRequest) returns (DequeueResponse);
+    rpc IsEmpty(IsEmptyRequest) returns (IsEmptyResponse);
+    rpc Size(SizeRequest) returns (SizeResponse);
+}
+
+message EnqueueRequest {
+    int32 value = 1;
+}
+
+message EnqueueResponse {
+    bool success = 1;
+}
+
+message DequeueRequest {}
+
+message DequeueResponse {
+    int32 value = 1;
+    bool success = 2;
+}
+
+message IsEmptyRequest {}
+
+message IsEmptyResponse {
+    bool empty = 1;
+}
+
+message SizeRequest {}
+
+message SizeResponse {
+    int32 size = 1;
+}
