@@ -6,9 +6,20 @@ use std::path::{PathBuf, Path};
 use std::fs::OpenOptions;
 use std::io::{self, prelude::*, BufReader, SeekFrom};
 
-pub fn list_dir(dirname: &str) -> Result<Vec<PathBuf>, Box<dyn Error>> {
+pub fn check_on_file_exists(pb: PathBuf) -> bool {
+    match pb.try_exists() {
+        Ok(res) => return res,
+        Err(_) => return false,
+        _ => return false,  
+    }
+}
+pub fn pb_to_string(pb: &PathBuf) -> String {
+    return pb.clone().into_os_string().into_string().unwrap();
+}
+
+pub fn list_dir(dirname: &PathBuf) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     let mut files: Vec<PathBuf> = Vec::new();
-    match fs::read_dir(dirname) {
+    match fs::read_dir(pb_to_string(&dirname)) {
        Err(why) => println!("! {:?}", why.kind()),
        Ok(paths) => for path in paths {
             files.push(path.unwrap().path());
@@ -17,8 +28,8 @@ pub fn list_dir(dirname: &str) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     Ok(files)
 }
 
-pub fn create_dir(dirname: String) -> Result<(), Box<dyn Error>> {
-    match fs::create_dir(&dirname) {
+pub fn create_dir(dirname: PathBuf) -> Result<(), Box<dyn Error>> {
+    match fs::create_dir(&pb_to_string(&dirname)) {
         Err(why) => println!("! {:?}", why.kind()),
         Ok(_) => println!("Done!"), 
     };
