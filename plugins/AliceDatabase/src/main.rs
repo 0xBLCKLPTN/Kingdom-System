@@ -5,7 +5,7 @@ pub mod fs_manager;
 pub mod remore_db;
 pub mod log_db;
 pub mod queue_db;
-
+pub mod default_db;
 
 use fs_manager::*;
 use atypes::*;
@@ -17,6 +17,7 @@ use std::path::PathBuf;
 use log_db::*;
 use remore_db::*;
 use queue_db::*;
+use default_db::*;
 
 struct AliceDatabase {
     pub log_db_mod: Option<LogDatabase>,
@@ -35,7 +36,14 @@ impl AliceDatabase {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut adb = AliceDatabase::new(true);
+    //let mut adb = AliceDatabase::new(true);
+    let mut db = DefaultDatabase::new(PathBuf::from("./DATABASE"));
+    let mut fields_vec: Vec<DField> = Vec::new();
+    fields_vec.push(DField { name: "usernames".to_string(), ftype: "string".to_string()});
+    db.find_tables().await;
+    println!("{:#?}", db);
+    db.get_table_by_name("users").await;
+
     Ok(())
     
 }
