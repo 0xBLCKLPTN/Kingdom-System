@@ -1,6 +1,6 @@
 <div align='center'>
-  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/illustrations/black/Kingdom-System.svg#gh-light-mode-only">
-  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/illustrations/white/Kingdom-System.svg#gh-dark-mode-only">
+  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/illustrations/black/Kingdom-System.svg#gh-light-mode-only">
+  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/illustrations/white/Kingdom-System.svg#gh-dark-mode-only">
 </div>
 
 <div align="center">
@@ -16,13 +16,13 @@
 
 ---
 
-![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/screenshots/AboutProject.svg)
+![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/screenshots/AboutProject.svg)
 
 
-![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/screenshots/Important.svg)
+![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/screenshots/Important.svg)
 
 
-![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/docs/screenshots/WhyRust.svg)
+![alt text](https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/screenshots/WhyRust.svg)
 
 
 # Developer installation:
