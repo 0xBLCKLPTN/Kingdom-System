@@ -12,7 +12,7 @@ impl Command {
         Command { command: command.to_string(), author: author.to_string() }
     }
 }
-
+#[derive(Debug)]
 pub struct Queue {
     pub deque: Mutex<VecDeque<Command>>,
 }
