@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: cd modules/api && cargo build --verbose
+      run: cd /home/runner/work/Kingdom-System/Plugins/AliceDatabase && cargo build --verbose
     - name: Run tests
-      run: cd modules/api && cargo test --verbose
+      run: cd /home/runner/work/Kingdom-System/Plugins/AliceDatabase && cargo test --verbose
