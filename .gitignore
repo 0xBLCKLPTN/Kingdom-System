@@ -31,3 +31,5 @@ bazel-out
 bazel-testlogs
 
 LOGDATABASE
+DATABASE
+*.adb

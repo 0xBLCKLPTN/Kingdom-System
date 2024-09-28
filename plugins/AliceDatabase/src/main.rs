@@ -6,18 +6,22 @@ pub mod remore_db;
 pub mod log_db;
 pub mod queue_db;
 pub mod default_db;
+pub mod adbcore;
 
 use fs_manager::*;
-use atypes::*;
+//use atypes::*;
 use configurator::*;
 use std::env;
-
+//use adbcore;
 use std::path::PathBuf;
-
+use crate::adbcore::DatabaseController;
+use crate::adbcore::Databases;
+/*
 use log_db::*;
 use remore_db::*;
 use queue_db::*;
 use default_db::*;
+use adbcore;
 
 struct AliceDatabase {
     pub log_db_mod: Option<LogDatabase>,
@@ -33,17 +37,27 @@ impl AliceDatabase {
         AliceDatabase { log_db_mod, remore_db_mod, queue_db_mod}
     }
 }
-
+*/
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    //let mut adb = AliceDatabase::new(true);
-    let mut db = DefaultDatabase::new(PathBuf::from("./DATABASE"));
-    let mut fields_vec: Vec<DField> = Vec::new();
-    fields_vec.push(DField { name: "usernames".to_string(), ftype: "string".to_string()});
-    db.find_tables().await;
-    println!("{:#?}", db);
-    db.get_table_by_name("users").await;
+    let args: Vec<String> = env::args().collect();    
+    let conf = read_config(&args[1]).unwrap();
 
+    let mut dbs = Databases::new();
+
+    for db in conf {
+        let mut k = adbcore::Database::new(PathBuf::from(db.database_path), db.database_type.as_str());
+        for table in db.tables {
+            k.create_table(table.name.as_str()).await;
+        }
+        dbs.add(k);
+    }
+
+    let k = dbs.get_db_by_name("DATABASE".to_string());
+    match k {
+        Some(db) => println!("{:#?}", db.get_table_by_name("ananas".to_string()).await),
+        _ => println!("I Cant find db"),
+    }
     Ok(())
     
 }

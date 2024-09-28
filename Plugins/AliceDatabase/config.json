@@ -2,11 +2,11 @@
     {
       "database_name": "users",
       "database_description": "description of database",
-      "database_path": "/path_to_database",
-      "database_type": "cache",
+      "database_path": "./DATABASE",
+      "database_type": "default",
       "tables": [
         {
-          "name": "QWE",
+          "name": "ananas",
           "fields": [{"name": "username", "ftype": "string"}]
         }
       ]
@@ -14,7 +14,7 @@
     {
       "database_name": "logins",
       "database_description": "description of database",
-      "database_path": "/path_to_database",
+      "database_path": "./DATABASE",
       "database_type": "default",
       "tables": [
         {
