@@ -33,3 +33,5 @@ bazel-testlogs
 LOGDATABASE
 DATABASE
 *.adb
+
+ADBB
