@@ -22,6 +22,16 @@
           "fields": [{"name": "username", "ftype": "string"}]
         }
       ]
-      
+    },
+    {
+      "database_name": "logs",
+      "database_description": "database for logs",
+      "database_path": "./LOGDATABASE",
+      "database_type": "log",
+      "tables": [
+        {
+          "name": "alice_db_log"
+        }
+      ]
     }
   ]
