@@ -7,7 +7,7 @@
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs;
-
+use std::io::ErrorKind;
 use std::ffi::OsString;
 
 use std::io::{ self, prelude::*, BufReader, SeekFrom };
@@ -71,7 +71,7 @@ pub async fn listdir(dirpath: &PathBuf) -> BoxedResult<Vec<PathBuf>> {
 /// ```
 pub async fn create_dir(dirpath: &PathBuf) -> BoxedResult<()> {
     match fs::create_dir(&pathbuf_to_string(dirpath).await.unwrap()) {
-        Err(why) => println!("!{:?}", why.kind()),
+        Err(why) => println!("CD !{:?}", why.kind()),
         Ok(_) => println!("Done!"),
     };
     Ok(())
@@ -99,12 +99,11 @@ pub async fn delete_dir(dirpath: &PathBuf) -> BoxedResult<()> {
 /// ```
 /// let _ = create_file(&PathBuf::from("./testfile")).await.unwrap();
 /// ```
-pub async fn create_file(filepath: &PathBuf) -> BoxedResult<()> {
-    match File::create(pathbuf_to_string(filepath).await.unwrap()) {
-        Err(why) => println!("!{:?}", why.kind()),
-        Ok(_) => println!("Done"),
+pub async fn create_file(filepath: &PathBuf) -> Result<(), ErrorKind> {
+    return match File::create(pathbuf_to_string(filepath).await.unwrap()) {
+        Err(why) => Err(why.kind()),
+        Ok(_) => Ok(()),
     };
-    Ok(())
 }
 
 /// Deletes file using filepath.

@@ -1,11 +1,26 @@
 alpha = { 'a'..'z' | 'A'..'Z' }
 digit = { '0'..'9' }
+ident = { !digit ~ (alpha | digit)+ }
 
-ident = { !digit ~ (alpha | digit)+}
- 
-create_database = { "CREATE DATABASE " ~ ident }
-create_table = { "CREATE TABLE " ~ ident }
+item = { ident }
+items = { item ~ (( ", " | "," ) ~ item)* }
 
-sql_statement = { create_database | create_table }
+create_database = { "CREATE DATABASE " ~ ident ~ " ENGINE " ~ ident }
+create_table = { "CREATE TABLE " ~ ident ~ "." ~ ident }
+select_from = { "SELECT " ~ ident ~ " FROM " ~ ident }
+insert_data = { "INSERT " ~ "(" ~ items ~ ")" ~ " INTO " ~ ident ~ "." ~ ident }
+create_user = { "CREATE USER " ~ ident ~ " PASSWORD " ~ ident }
+delete_user = { "DELETE USER " ~ ident }
+
+delete_database = { "DELETE DATABASE " ~ ident }
+delete_table = { "DELETE TABLE " ~ ident}
+
+print_alldb = { "PRINTALLDB" }
+
+sql_statement = { 
+    create_database | create_table | select_from | 
+    insert_data | create_user | delete_user |
+    delete_database | delete_table | print_alldb
+ }
 
 sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | ("; " ~ sql_statement))* ~ ";"? }
