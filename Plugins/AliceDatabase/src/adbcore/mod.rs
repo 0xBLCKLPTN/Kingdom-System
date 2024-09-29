@@ -7,3 +7,4 @@
 pub mod types;
 pub mod fs_manager;
 pub mod executor;
+pub mod pickling;

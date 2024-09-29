@@ -139,6 +139,24 @@ pub async fn simple_write(filepath: &PathBuf, data: &str) -> BoxedResult<()> {
     Ok(())
 }
 
+/// Write some data to file.
+///
+/// Examples
+///
+/// ```
+/// let _ = write(&PathBuf::from("./testfile", "[LOG]->DATA")).await.unwrap()
+/// ```
+pub async fn simple_write_wa(filepath: &PathBuf, data: &str) -> BoxedResult<()> {
+    let mut file = OpenOptions::new()
+                    .write(true)
+                    .append(false)
+                    .open(&pathbuf_to_string(filepath).await.unwrap())
+                    .unwrap();
+    if let Err(why) = writeln!(file, "{}", data.to_string()) {
+        eprintln!("Couldn't write to file: {}", why);
+    }
+    Ok(())
+}
 /// Read some data from file.
 /// 
 /// Examples

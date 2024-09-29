@@ -23,7 +23,7 @@ use adbcore::types::BoxedResult;
 use adbcore::executor::execute_command;
 use engines::default_adbp::*;
 use configurator::read_config;
-
+use adbcore::pickling::*;
 use std::process::Command;
 
 fn clear() {
