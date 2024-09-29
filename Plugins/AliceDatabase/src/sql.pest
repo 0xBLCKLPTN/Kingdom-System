@@ -1,0 +1,11 @@
+alpha = { 'a'..'z' | 'A'..'Z' }
+digit = { '0'..'9' }
+
+ident = { !digit ~ (alpha | digit)+}
+ 
+create_database = { "CREATE DATABASE " ~ ident }
+create_table = { "CREATE TABLE " ~ ident }
+
+sql_statement = { create_database | create_table }
+
+sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | ("; " ~ sql_statement))* ~ ";"? }
