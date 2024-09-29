@@ -1,12 +1,11 @@
 [
     {
-      "database_name": "users",
+      "database_name": "auth",
       "database_description": "description of database",
-      "database_path": "./DATABASE",
       "database_type": "default",
       "tables": [
         {
-          "name": "ananas",
+          "name": "users",
           "fields": [{"name": "username", "ftype": "string"}]
         }
       ]
@@ -14,11 +13,10 @@
     {
       "database_name": "logins",
       "database_description": "description of database",
-      "database_path": "./DATABASE",
       "database_type": "default",
       "tables": [
         {
-          "name": "QWE",
+          "name": "alllogins",
           "fields": [{"name": "username", "ftype": "string"}]
         }
       ]
@@ -26,11 +24,10 @@
     {
       "database_name": "logs",
       "database_description": "database for logs",
-      "database_path": "./LOGDATABASE",
       "database_type": "log",
       "tables": [
         {
-          "name": "alice_db_log"
+          "name": "logstable"
         }
       ]
     }

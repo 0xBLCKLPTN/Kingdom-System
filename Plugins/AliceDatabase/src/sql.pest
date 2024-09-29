@@ -1,6 +1,7 @@
 alpha = { 'a'..'z' | 'A'..'Z' }
 digit = { '0'..'9' }
-ident = { !digit ~ (alpha | digit)+ }
+//ident = { !digit ~ (alpha | digit)+ }
+ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC)* }
 
 item = { ident }
 items = { item ~ (( ", " | "," ) ~ item)* }
@@ -15,12 +16,12 @@ delete_user = { "DELETE USER " ~ ident }
 delete_database = { "DELETE DATABASE " ~ ident }
 delete_table = { "DELETE TABLE " ~ ident}
 
-print_alldb = { "PRINTALLDB" }
+show_databases = { "SHOW DATABASES" }
 
 sql_statement = { 
     create_database | create_table | select_from | 
     insert_data | create_user | delete_user |
-    delete_database | delete_table | print_alldb
+    delete_database | delete_table | show_databases
  }
 
 sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | ("; " ~ sql_statement))* ~ ";"? }

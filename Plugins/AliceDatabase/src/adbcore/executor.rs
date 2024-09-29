@@ -10,6 +10,8 @@ use std::sync::Mutex;
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use termion::color;
+
 #[derive(Parser)]
 #[grammar = "sql.pest"]
 struct IdentParser;
@@ -23,47 +25,47 @@ pub async fn execute_command(command: &str) -> BoxedResult<()> {
             match inner_pair.as_rule() {
                 Rule::create_table => {
                     let val =inner_pair.into_inner().as_str().split(".").collect::<Vec<_>>();
-                    println!("Creating table: {:?} in database: {:?}", val[1], val[0]);
-                    match create_table(val[1], val[0]).await {
+                    adbprint!("Creating table: {:?} in database: {:?}", val[1], val[0]);
+                    match create_table(val[0], val[1]).await {
                         ErrorKind => {
-                            create_database(val[1], "default").await;
-                            create_table(val[1], val[0]).await;
+                            create_database(val[0], "default").await;
+                            create_table(val[0], val[1]).await;
                         }
                     }
                     
                 },
                 Rule::create_database => {
                     let val = inner_pair.into_inner().as_str().split_whitespace().collect::<Vec<_>>();
-                    println!("Creating database: {:?} engine {:?}", val[0], val[2]);
-                    println!("{:#?}", create_database(val[0], val[2]).await);
+                    adbprint!("Creating database: {:?} engine {:?}", val[0], val[2]);
+                    adbprint!("{:#?}", create_database(val[0], val[2]).await);
                 },
                 Rule::select_from => {
                     let val = inner_pair.into_inner().as_str().split_whitespace().collect::<Vec<_>>();
-                    println!("Select {:#?} from {:#?}" , val[0], val[2]);
+                    adbprint!("Select {:#?} from {:#?}" , val[0], val[2]);
                 },
                 Rule::insert_data => {
                     //println!("{:#?}", inner_pair.into_inner());
                     let val = inner_pair.into_inner().as_str().split(" INTO ").collect::<Vec<_>>();
                     let k = val[1].split(".").collect::<Vec<_>>();
-                    println!("{:#?}", k);
+                    adbprint!("{:#?}", k);
                     write(k[0], k[1], val[0].replace(")", "").as_str()).await;
-                    println!("Insert {:#?} INTO {:#?}", val[0].replace(")", "").as_str(), val[1]);
+                    adbprint!("Insert {:#?} INTO {:#?}", val[0].replace(")", "").as_str(), val[1]);
                 },
                 Rule::create_user => {
                     let val = inner_pair.into_inner().as_str().split_whitespace().collect::<Vec<_>>();
-                    println!("Create user {:#?} with password {:#?}" , val[0], val[2]);
+                    adbprint!("Create user {:#?} with password {:#?}" , val[0], val[2]);
                 }
                 Rule::delete_user => {
-                    println!("Delete user {:#?}" , inner_pair.into_inner().as_str());
+                    adbprint!("Delete user {:#?}" , inner_pair.into_inner().as_str());
                 },
                 Rule::delete_database => {
-                    println!("Delete database {:#?}", inner_pair.into_inner().as_str());
+                    adbprint!("Delete database {:#?}", inner_pair.into_inner().as_str());
                 },
                 Rule::delete_table => {
-                    println!("Delete table {:#?}", inner_pair.into_inner().as_str());
+                    adbprint!("Delete table {:#?}", inner_pair.into_inner().as_str());
                 },
-                Rule::print_alldb => {
-                    println!("INFO: {:#?}", get_tables_in_databases().await);
+                Rule::show_databases => {
+                    adbprint!("DATABASES: {:#?}", get_databases().await);
                 }
 
                 //println!("Select {:#?} from {:#?}", inner_pair.clone().into_inner().as_str(), inner_pair.into_inner()[1])

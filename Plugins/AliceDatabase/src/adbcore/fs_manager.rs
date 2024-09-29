@@ -9,13 +9,12 @@ use std::fs::OpenOptions;
 use std::fs;
 use std::io::ErrorKind;
 use std::ffi::OsString;
-
+use termion::color;
 use std::io::{ self, prelude::*, BufReader, SeekFrom };
 
 use std::path::{PathBuf, Path};
 
 use crate::BoxedResult;
-
 
 /// Returns true if file exists or false if not.
 ///
@@ -53,7 +52,7 @@ pub async fn pathbuf_to_string(pathbuf: &PathBuf) -> Result<String, OsString>{
 pub async fn listdir(dirpath: &PathBuf) -> BoxedResult<Vec<PathBuf>> {
     let mut files: Vec<PathBuf> = vec![];
     match fs::read_dir(pathbuf_to_string(&dirpath).await.unwrap()) {
-        Err(why) => println!( "!{:?}", why.kind() ),
+        Err(why) => adbprint!( "!{:?}", why.kind() ),
         Ok(paths) => for path in paths {
             files.push(path.unwrap().path());
 
@@ -71,8 +70,8 @@ pub async fn listdir(dirpath: &PathBuf) -> BoxedResult<Vec<PathBuf>> {
 /// ```
 pub async fn create_dir(dirpath: &PathBuf) -> BoxedResult<()> {
     match fs::create_dir(&pathbuf_to_string(dirpath).await.unwrap()) {
-        Err(why) => println!("CD !{:?}", why.kind()),
-        Ok(_) => println!("Done!"),
+        Err(why) => adbprint!("CD !{:?}", why.kind()),
+        Ok(_) => adbprint!("Done!"),
     };
     Ok(())
 }
@@ -86,8 +85,8 @@ pub async fn create_dir(dirpath: &PathBuf) -> BoxedResult<()> {
 /// ```
 pub async fn delete_dir(dirpath: &PathBuf) -> BoxedResult<()> {
     match fs::remove_dir(&pathbuf_to_string(dirpath).await.unwrap()) {
-        Err(why) => println!("! {:?}", why.kind()),
-        Ok(_) => println!("Done!"),
+        Err(why) => adbprint!("! {:?}", why.kind()),
+        Ok(_) => adbprint!("Done!"),
     };
     Ok(())
 }
@@ -115,8 +114,8 @@ pub async fn create_file(filepath: &PathBuf) -> Result<(), ErrorKind> {
 /// ```
 pub async fn delete_file(filepath: &PathBuf) -> BoxedResult<()> {
     match fs::remove_file(pathbuf_to_string(filepath).await.unwrap()) {
-        Err(why) => println!("!{:?}", why.kind()),
-        Ok(_) => println!("Done!"),
+        Err(why) => adbprint!("!{:?}", why.kind()),
+        Ok(_) => adbprint!("Done!"),
     }
     Ok(())
 }
