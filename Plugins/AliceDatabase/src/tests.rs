@@ -77,4 +77,9 @@ mod tests {
         delete_file(&PathBuf::from("./testfile3")).await.unwrap();
         assert_eq!(out, "data\n");
     }
+    #[tokio::test]
+    pub async fn execute_command_test() {
+        let res = execute_command("CREATE TABLE testtable;").await.unwrap();
+        assert_eq!(res, ());
+    }
 }
