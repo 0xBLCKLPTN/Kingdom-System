@@ -88,8 +88,8 @@ async fn prepair_using_config(config_path: &str) {
 async fn main() -> BoxedResult<()> {
     print_ascii();
     prepair_using_config("./config.json").await;
-    execute_command("SHOW DATABASES;").await;
-    
+    //execute_command("SHOW DATABASES;").await;
+    execute_command("INSERT (data1, data2) INTO auth.users;").await;
     //execute_command("CREATE DATABASE " + config.database_name + ";").await;
     ///println!("{:#?}", get_databases().await);
     //println!("{:#?}", get_tables_in_databases().await);

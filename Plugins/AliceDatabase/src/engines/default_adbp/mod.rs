@@ -55,5 +55,9 @@ pub async fn delete_table(db_name: &str, table_name: &str) -> BoxedResult<()> {
 }
 
 pub async fn write(db_name: &str, table_name: &str, data: &str) -> BoxedResult<()> {
+    let mut k: pickling::TablePickle = pickling::unpickle_struct(&ALICEDB_DEFAULT_PATH.join(db_name).join(table_name.to_owned() + ".alicedb.configuration")).await.unwrap();
+    k.indexes += 1;
+    let j = pickling::pickle_struct(&k).await;
+    simple_write_wa(&ALICEDB_DEFAULT_PATH.join(db_name).join(table_name.to_owned() + ".alicedb.configuration"), j.as_str()).await;
     return Ok(simple_write(&ALICEDB_DEFAULT_PATH.join(db_name).join(table_name.to_owned() + ".alicedb"), data).await?)
 }

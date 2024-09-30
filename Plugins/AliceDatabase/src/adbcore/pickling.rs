@@ -25,10 +25,10 @@ pub async fn pickle_struct(data: &TablePickle) -> String {
     }
 }
 
-pub async fn unpickle_struct(filepath: &PathBuf) -> BoxedResult<()> {
+pub async fn unpickle_struct(filepath: &PathBuf) -> BoxedResult<TablePickle> {
     adbprint!("Unpickle Struct");
     let encoded = read_file(filepath).await.unwrap().as_bytes().to_vec();
     let decoded: TablePickle = bincode::deserialize(&encoded[..]).unwrap();
     println!("{:#?}", decoded);
-    Ok(())
+    Ok(decoded)
 }
