@@ -22,10 +22,10 @@ crate_universe_dependencies()
 load("@rules_rust//crate_universe:defs.bzl", "crates_repository", "crate")
 crates_repository(
     name = "crate_index",
-    cargo_lockfile = "//Plugins/AliceDatabase:Cargo.lock",
-    lockfile = "//Plugins/AliceDatabase:Cargo.Bazel.lock",
+    cargo_lockfile = "//Plugins/Alice-Database:Cargo.lock",
+    lockfile = "//Plugins/Alice-Database:Cargo.Bazel.lock",
     manifests = [
-        "//Plugins/AliceDatabase:Cargo.toml",
+        "//Plugins/Alice-Database:Cargo.toml",
     ],
     # Should match the version represented by the currently registered `rust_toolchain`.
     rust_version = "1.81.0",
