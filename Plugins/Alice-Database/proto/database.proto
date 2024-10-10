@@ -70,9 +70,15 @@ message GetAllFromRequest {
 
 }
 
+message DataResponse {
+    string id = 1;
+    string data = 2;
+    
+}
+
 message GetAllFromResponse {
 
-    repeated string data = 1; // List of all records
+    repeated DataResponse data = 1; // List of all records
 
     string message = 2; // Status message
 

@@ -14,10 +14,10 @@ use uuid::Uuid;
 use serde_json;
 use termion::color;
 use tonic::{transport::Server, Request, Response, Status};
-
+use chrono::{DateTime, Utc};
 //use database::{database_service_server::{DatabaseService, DatabaseServiceServer}, CreateTableRequest, CreateTableResponse, InsertIntoRequest, InsertIntoResponse, FindInRequest, FindInResponse};
 
-use database::{database_service_server::{DatabaseService, DatabaseServiceServer}, CreateTableRequest, CreateTableResponse, DropTableRequest, DropTableResponse, LoadTableRequest, LoadTableResponse, InsertIntoRequest, InsertIntoResponse, DeleteFromRequest, DeleteFromResponse, FindInRequest, FindInResponse, GetAllFromResponse, GetAllFromRequest};
+use database::{database_service_server::{DatabaseService, DatabaseServiceServer}, CreateTableRequest, DataResponse ,CreateTableResponse, DropTableRequest, DropTableResponse, LoadTableRequest, LoadTableResponse, InsertIntoRequest, InsertIntoResponse, DeleteFromRequest, DeleteFromResponse, FindInRequest, FindInResponse, GetAllFromResponse, GetAllFromRequest};
 
 
 pub mod database {
@@ -35,7 +35,7 @@ impl DatabaseService for MyDatabaseService {
 
         let mut db = self.db.write().await;
         db.create_table(&table_name).await.map_err(|e| Status::internal(e.to_string()))?;
-
+        info!("Table {} created!", table_name);
         Ok(Response::new(CreateTableResponse { message: format!("Table {} created", table_name) }))
     }
 
@@ -44,7 +44,7 @@ impl DatabaseService for MyDatabaseService {
 
         let mut db = self.db.write().await;
         db.drop_table(&table_name).await.map_err(|e| Status::internal(e.to_string()))?;
-
+        info!("Table {} dropped!", table_name);
         Ok(Response::new(DropTableResponse { message: format!("Table {} dropped", table_name) }))
     }
 
@@ -53,7 +53,7 @@ impl DatabaseService for MyDatabaseService {
 
         let mut db = self.db.write().await;
         db.load_table(&table_name).await.map_err(|e| Status::internal(e.to_string()))?;
-
+        info!("Table {} loaded!", table_name);
         Ok(Response::new(LoadTableResponse { message: format!("Table {} loaded", table_name) }))
     }
 
@@ -64,7 +64,7 @@ impl DatabaseService for MyDatabaseService {
 
         let mut db = self.db.write().await;
         db.insert_into(&table_name, data).await.map_err(|e| Status::internal(e.to_string()))?;
-
+        info!("Item inserted into {} table!", table_name);
         Ok(Response::new(InsertIntoResponse { message: "Insert successful".into() }))
     }
 
@@ -75,7 +75,7 @@ impl DatabaseService for MyDatabaseService {
 
         let mut db = self.db.write().await;
         db.delete_from(&table_name, &id).await.map_err(|e| Status::internal(e.to_string()))?;
-
+        info!("Item deleted from {}!", table_name);
         Ok(Response::new(DeleteFromResponse { message: "Delete successful".into() }))
     }
 
@@ -83,7 +83,7 @@ impl DatabaseService for MyDatabaseService {
         let req = request.into_inner();
         let table_name = req.table_name;
         let id = req.id;
-
+        info!("Find in request from table {}", table_name);
         let db = self.db.read().await;
         match db.find_in(&table_name, &id).await {
             Ok(Some(item)) => Ok(Response::new(FindInResponse { data: serde_json::to_string(&item).unwrap(), message: "Item found".into() })),
@@ -98,13 +98,25 @@ impl DatabaseService for MyDatabaseService {
 
         let db = self.db.read().await;
 
+        info!("Get all from request from table {}", table_name);
         match db.get_all(&table_name).await {
 
             Ok(generic_items) => {
 
-                // Map GenericItem to String (e.g., assuming generic_items is Vec<GenericItem>)
+                let items: Vec<DataResponse> = generic_items
 
-                let items: Vec<String> = generic_items.iter().map(|item| item.data.clone()).collect();
+                .iter()
+
+                .map(|item| DataResponse {
+
+                    id: item.id.clone(), // Get the ID from GenericItem
+
+                     data: item.data.clone(), // Get the data from GenericItem
+
+                })
+
+                .collect();
+
 
                 Ok(Response::new(GetAllFromResponse {
 
@@ -114,13 +126,14 @@ impl DatabaseService for MyDatabaseService {
 
                 }))
 
-            },
+            }
 
             Err(e) => Err(Status::internal(e.to_string())),
 
         }
 
     }
+
 }
 
 
@@ -305,7 +318,7 @@ impl Database {
                     cache.insert(item_id.clone(), item.clone());
                 } else {
                     // Обработка случая, когда элемент не найден
-                    adbprint!("Item with ID {} not found in table items.", item_id);
+                    error!("Item with ID {} not found in table items.", item_id);
                 }
             }
             Ok(())
@@ -487,10 +500,11 @@ async fn main() -> Result<(), DatabaseError> {
 async fn main() -> Result<(), DatabaseError> {
     // Your existing database initialization code here...
     print_ascii();
-    let log_file = File::create("app.log").map_err(DatabaseError::IoError)?;
+    let now: DateTime<Utc> = Utc::now();
+    let log_file = File::create(now.format("%Y-%m-%d %H:%M:%S").to_string()).map_err(DatabaseError::IoError)?;
 
 
-    WriteLogger::init(LevelFilter::Info, Config::default(), log_file).map_err(|e| {
+    WriteLogger::init(LevelFilter::Trace, Config::default(), log_file).map_err(|e| {
 
         DatabaseError::IoError(std::io::Error::new(ErrorKind::Other, e.to_string()))
 
