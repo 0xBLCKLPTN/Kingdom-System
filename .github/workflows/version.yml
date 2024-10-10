@@ -18,12 +18,18 @@ jobs:
         run: |
           COMMIT_COUNT=$(git rev-list --count HEAD)
           LAST_COMMIT_HASH=$(git rev-parse HEAD) # Получаем полный хеш
-          echo "total_commits=$COMMIT_COUNT" >> $GITHUB_ENV
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_ENV
           echo "last_commit_hash=$LAST_COMMIT_HASH" >> $GITHUB_ENV
 
       - name: Create VERSION file
         run: |
-          echo "1.7.7_${{ env.last_commit_hash }}" > VERSION
+          # Формируем версию
+          MAJOR=$((commit_count / 100))
+          MINOR=$(( (commit_count / 10) % 10 ))
+          PATCH=$((commit_count % 10))
+          VERSION="${MAJOR}.${MINOR}.${PATCH}_${{ env.last_commit_hash }}"
+          
+          echo "$VERSION" > VERSION
 
       - name: Commit and push changes
         run: |
