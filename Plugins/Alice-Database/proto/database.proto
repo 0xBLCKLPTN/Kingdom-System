@@ -77,9 +77,12 @@ message DataResponse {
 }
 
 message GetAllFromResponse {
-
     repeated DataResponse data = 1; // List of all records
-
     string message = 2; // Status message
+}
 
+// FEATURE.
+message ExecuteCommandRequest {
+    string command = 1;
+    string credentials = 2;
 }

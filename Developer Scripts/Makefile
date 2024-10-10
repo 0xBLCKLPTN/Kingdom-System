@@ -13,11 +13,11 @@ bca:
 
 # bazel test alicedb
 bta:
-	cd .. && bazel test //Plugins/AliceDatabase:rs_test
+	cd .. && bazel test //Plugins/Alice-Database:rs_test
 
 # bazel build alicedb
 bba:
-	cd .. && CARGO_BAZEL_REPIN=true bazel build //Plugins/AliceDatabase:rs_bazel
+	cd .. && CARGO_BAZEL_REPIN=true bazel build //Plugins/Alice-Database:rs_bazel
 
 # enter to nix
 etn:

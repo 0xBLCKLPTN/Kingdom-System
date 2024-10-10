@@ -94,40 +94,24 @@ impl DatabaseService for MyDatabaseService {
     async fn get_all_from(&self, request: Request<GetAllFromRequest>) -> Result<Response<GetAllFromResponse>, Status> {
 
         let table_name = request.into_inner().table_name;
-
-
         let db = self.db.read().await;
 
         info!("Get all from request from table {}", table_name);
         match db.get_all(&table_name).await {
-
             Ok(generic_items) => {
-
                 let items: Vec<DataResponse> = generic_items
-
                 .iter()
-
                 .map(|item| DataResponse {
-
                     id: item.id.clone(), // Get the ID from GenericItem
-
-                     data: item.data.clone(), // Get the data from GenericItem
-
+                    data: item.data.clone(), // Get the data from GenericItem
                 })
-
                 .collect();
 
-
                 Ok(Response::new(GetAllFromResponse {
-
                     data: items,
-
                     message: "Items retrieved successfully".into(),
-
                 }))
-
             }
-
             Err(e) => Err(Status::internal(e.to_string())),
 
         }
@@ -254,6 +238,7 @@ impl Table {
         self.items.get(id)
     }
 }
+
 #[derive(Default)]
 pub struct Database {
     path: PathBuf,
@@ -505,19 +490,13 @@ async fn main() -> Result<(), DatabaseError> {
 
 
     WriteLogger::init(LevelFilter::Trace, Config::default(), log_file).map_err(|e| {
-
         DatabaseError::IoError(std::io::Error::new(ErrorKind::Other, e.to_string()))
-
     })?;
 
     let db = Arc::new(RwLock::new(Database::new("database"))); // Wrap in Arc<RwLock<Database>>
-
     {
-
         let mut db_write = db.write().await;
-
         db_write.load_all_tables().await?; // Load existing tables
-
     }
     let addr = "[::1]:50051".parse().unwrap();
     let database_service = MyDatabaseService { db }; // Use the Arc<RwLock>
