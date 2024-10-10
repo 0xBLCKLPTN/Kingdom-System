@@ -1,0 +1,106 @@
+.navItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px 0;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .itemText {
+    margin-left: 20px;
+    opacity: 100; /* Скрываем текст по умолчанию */
+    transform: translateX(-10px); /* Сдвиг текста влево */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Анимация для текста */
+  }
+  
+  .navItem:hover .itemText {
+    opacity: 1; /* Показываем текст при наведении */
+    transform: translateX(0); /* Возвращаем текст в исходную позицию */
+  }
+  
+  .navItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .sidebar {
+    width: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logo {
+    margin-bottom: 20px;
+  }
+  
+  .main {
+    flex-grow: 1;
+    padding: 20px;
+    position: relative;
+    overflow: auto;
+  }
+  
+  .header {
+    position: relative;
+  }
+  
+  .headerContent {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  .content {
+    margin-top: 20px;
+    background-color: #40444b;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+    margin-top: auto; /* Чтобы все располагалось внизу */
+  }
+  
+  .userDetails {
+    margin-left: 10px;
+  }
+  
+  .userButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: color 0.2s;
+  }
+  
+  .userButton:hover {
+    text-decoration: underline;
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .userDetails {
+    margin-left: 10px;
+  }
+  
+  .friendsPanel {
+    width: 80px; /* Ширина панели друзей */
+    position: absolute;
+    top: 0;
+    left: 250px; /* Положение правее основной панели */
+    z-index: 10;
+    /*transition: all 0.1s ease;*/
+    height: 100%; /* Заполнение по высоте */
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  
+  
