@@ -17,15 +17,13 @@ jobs:
         id: get_info
         run: |
           COMMIT_COUNT=$(git rev-list --count HEAD)
-          LAST_COMMIT_HASH=$(git rev-parse --short=7 HEAD)
+          LAST_COMMIT_HASH=$(git rev-parse HEAD) # Получаем полный хеш
           echo "total_commits=$COMMIT_COUNT" >> $GITHUB_ENV
           echo "last_commit_hash=$LAST_COMMIT_HASH" >> $GITHUB_ENV
 
       - name: Create VERSION file
         run: |
           echo "1.7.7_${{ env.last_commit_hash }}" > VERSION
-          echo "Total commits: ${{ env.total_commits }}" >> VERSION
-          echo "Last commit hash: ${{ env.last_commit_hash }}" >> VERSION
 
       - name: Commit and push changes
         run: |
