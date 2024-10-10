@@ -11,6 +11,7 @@ const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize"; // Указ
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
+  const [username, setUsername] = useState("");
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -20,9 +21,11 @@ export default function Home() {
     ? "https://raw.githubusercontent.com/0xBLCKLPTN/Kingdom-System/00fba0f093e419d8affffc5a797d24bbf8b1e0c3/Docs/illustrations/white/Kingdom-System.svg"
     : "https://raw.githubusercontent.com/0xBLCKLPTN/Kingdom-System/00fba0f093e419d8affffc5a797d24bbf8b1e0c3/Docs/illustrations/black/Kingdom-System.svg";
 
-  const handleLogin = () => {
-    router.push('/dashboard');
-  };
+    const handleLogin = () => {
+      // Передаем имя пользователя в параметры URL при переходе на страницу Dashboard
+      router.push(`/dashboard?username=${encodeURIComponent(username)}`);
+  
+    };
 
   const handleGitHubLogin = () => {
     const clientId = "YOUR_GITHUB_CLIENT_ID"; // Замените на ваш клиентский ID
@@ -57,7 +60,8 @@ export default function Home() {
       >
         <input
           type="text"
-          placeholder="Email"
+          placeholder="Username"
+          onChange={(e) => setUsername(e.target.value)} 
           className={`w-full p-3 border border-gray-300 rounded mb-3 transition-all duration-300 ${isDarkMode ? 'bg-gray-800 text-white' : ''} focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
         <input

@@ -1,13 +1,13 @@
-// src/app/dashboard/page.tsx
 "use client"; // Указание, что это клиентский компонент
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { MoonIcon, SunIcon, HomeIcon, UserGroupIcon, ServerIcon, CogIcon, XMarkIcon, ArchiveBoxIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { MoonIcon, SunIcon, HomeIcon, UserGroupIcon, ServerIcon, CogIcon, XMarkIcon, ArchiveBoxIcon, ExclamationTriangleIcon, PhoneIcon } from '@heroicons/react/24/outline'; // Импортируем PhoneIcon
 import { motion } from "framer-motion";
 import ReactMarkdown from 'react-markdown'; // Импортируем react-markdown
 import { useRouter } from 'next/navigation';
 import styles from './Dashboard.module.css';
+import { useSearchParams } from 'next/navigation'; 
 
 const user = {
   name: "Имя Пользователя",
@@ -29,6 +29,14 @@ const Dashboard: React.FC = () => {
   const [isFriendsPanelOpen, setFriendsPanelOpen] = useState(false);
   const [releases, setReleases] = useState<any[]>([]);
   const router = useRouter();
+  const [username, setUsername] = useState<string>("");
+  const searchParams = useSearchParams(); // Получаем параметры URL
+  useEffect(() => {
+    const usernameParam = searchParams.get("username"); // Извлекаем username из параметров
+    if (usernameParam) {
+      setUsername(usernameParam); // Устанавливаем имя пользователя в состояние
+    }
+  }, [searchParams]); // Добавляем searchParams в зависимости
 
   const toggleTheme = () => {
     setAnimate(true);
@@ -42,6 +50,10 @@ const Dashboard: React.FC = () => {
 
   const toggleFriendsPanel = () => {
     setFriendsPanelOpen(prev => !prev);
+  };
+
+  const handleCallsNavigation = () => {
+    router.push('/calls'); // Перенаправление на страницу звонков
   };
 
   useEffect(() => {
@@ -87,6 +99,10 @@ const Dashboard: React.FC = () => {
             <UserGroupIcon className="w-6 h-6" />
             <span className={styles.itemText}>Друзья</span>
           </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem} onClick={handleCallsNavigation}> {/* Обработчик для перехода на страницу звонков */}
+            <PhoneIcon className="w-6 h-6" />
+            <span className={styles.itemText}>Звонки</span>
+          </motion.div>
           {isFriendsPanelOpen && (
             <motion.div
               className={`${styles.friendsPanel} ${isDarkMode ? 'bg-gray-800 border-l border-white' : 'bg-white border-l border-gray-800'} p-4`}
@@ -109,6 +125,7 @@ const Dashboard: React.FC = () => {
                         <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                       }
                     </div>
+                    <span className="ml-2">{friend.name}</span>
                   </li>
                 ))}
               </ul>
@@ -134,7 +151,7 @@ const Dashboard: React.FC = () => {
         <div className={styles.userInfo}>
           <Image src={user.avatar} alt="Аватар" width={40} height={40} className="rounded-full" />
           <div className={styles.userDetails}>
-            <p className={isDarkMode ? 'text-white' : 'text-black'}>{user.name}</p>
+            <p className={isDarkMode ? 'text-white' : 'text-black'}>{username }</p>
             <button className={`${styles.userButton} ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               <XMarkIcon className="w-4 h-4 inline-block mr-1" /> Выйти
             </button>
@@ -180,11 +197,11 @@ const Dashboard: React.FC = () => {
                   </ReactMarkdown>
                 </div>
                 <div className="mt-2">
-                  <a href={release.html_url} className="text-blue-500" target="_blank" rel="noopener noreferrer">Full Changelog</a>
+                  <a href={release.html_url} className="text-blue-500" target="_blank" rel="noopener noreferrer">Полный журнал изменений</a>
                 </div>
                 {release.assets.length > 0 && (
                   <div className="mt-4">
-                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-black'}`}>More</h4>
+                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-black'}`}>Больше</h4>
                     <a href="https://github.com/0xBLCKLPTN/Kingdom-System/releases" className="text-blue-500">https://github.com/0xBLCKLPTN/Kingdom-System/releases</a>
                   </div>
                 )}

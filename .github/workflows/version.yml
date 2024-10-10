@@ -1,0 +1,38 @@
+name: Update Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get commit count and last commit hash
+        id: get_info
+        run: |
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          LAST_COMMIT_HASH=$(git rev-parse --short=7 HEAD)
+          echo "total_commits=$COMMIT_COUNT" >> $GITHUB_ENV
+          echo "last_commit_hash=$LAST_COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Create VERSION file
+        run: |
+          echo "1.7.7_${{ env.last_commit_hash }}" > VERSION
+          echo "Total commits: ${{ env.total_commits }}" >> VERSION
+          echo "Last commit hash: ${{ env.last_commit_hash }}" >> VERSION
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add VERSION
+          git commit -m "Update VERSION file"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
