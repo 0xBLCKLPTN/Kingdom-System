@@ -1,10 +1,12 @@
-"use client"; // Указание, что это клиентский компонент
+"use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline'; 
 import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
+
+const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize"; // Указание URL для авторизации
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -22,9 +24,18 @@ export default function Home() {
     router.push('/dashboard');
   };
 
+  const handleGitHubLogin = () => {
+    const clientId = "YOUR_GITHUB_CLIENT_ID"; // Замените на ваш клиентский ID
+    const redirectUri = encodeURIComponent("http://localhost:3000/auth/github/callback"); // Ваш URL перенаправления
+    const scope = "read:user user:email"; // Запрашиваемые разрешения
+
+    window.location.href = `${GITHUB_OAUTH_URL}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+  };
+
   return (
     <div className={`flex flex-col items-center justify-center h-screen p-4 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
       <motion.div
+        className="relative"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -67,6 +78,7 @@ export default function Home() {
 
         {/* Кнопка для входа через GitHub */}
         <motion.button 
+          onClick={handleGitHubLogin} // Обработка логина через GitHub
           className="w-full flex items-center justify-center p-3 mt-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition duration-200"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -84,6 +96,15 @@ export default function Home() {
         >
           Регистрация
         </motion.button>
+
+        {/* Картинка кота */}
+        <Image 
+          src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/illustrations/Deve.png?raw=true" 
+          alt="Котик" 
+          width={200} 
+          height={200} 
+          className="ml-20 mt-20"
+        />
       </motion.div>
 
       <motion.button 
