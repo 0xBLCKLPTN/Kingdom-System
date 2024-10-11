@@ -1,4 +1,4 @@
-name: Update Version with Commit Hash
+name: Create Release
 
 on:
   push:
@@ -6,36 +6,44 @@ on:
       - main
 
 jobs:
-  update-version:
+  create-release:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-    
-    - name: Get current version and commit hash
-      id: get_info
+
+    - name: Read current version
+      id: read_version
       run: |
         CURRENT_VERSION=$(cat VERSION)
-        COMMIT_HASH=$(git rev-parse HEAD)
         echo "Current version: $CURRENT_VERSION"
-        echo "Commit hash: $COMMIT_HASH"
         echo "::set-output name=current_version::$CURRENT_VERSION"
-        echo "::set-output name=commit_hash::$COMMIT_HASH"
-    
-    - name: Update version
-      id: update_version
+
+    - name: Increment version
+      id: increment_version
       run: |
-        IFS='.' read -r major minor patch <<< "${{ steps.get_info.outputs.current_version }}"
+        IFS='.+-' read -r major minor patch <<< "${{ steps.read_version.outputs.current_version }}"
         new_patch=$((patch + 1))
-        new_version="$major.$minor.$new_patch+${{ steps.get_info.outputs.commit_hash }}"
+        COMMIT_HASH=$(git rev-parse --short HEAD)
+        new_version="$major.$minor.$new_patch+$COMMIT_HASH"
         echo "New version: $new_version"
         echo "$new_version" > VERSION
-    
-    - name: Commit changes
+        echo "::set-output name=new_version::$new_version"
+
+    - name: Create Release
+      id: create_release
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add VERSION
-        git commit -m "Update version to ${{ steps.update_version.outputs.new_version }}" || echo "No changes to commit"
-        git push
+        VERSION=${{ steps.increment_version.outputs.new_version }}
+        GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+        response=$(curl -s -X POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/releases \
+          -d "{\"tag_name\":\"$VERSION\",\"name\":\"Release $VERSION\",\"body\":\"Release version $VERSION\"}")
+        echo "Release response: $response"
+        echo "::set-output name=release_response::$response"
+
+    - name: Summarize Work
+      run: |
+        echo "Release created successfully!"
+        echo "Version: ${{ steps.increment_version.outputs.new_version }}"
+        echo "Response: ${{ steps.create_release.outputs.release_response }}"
