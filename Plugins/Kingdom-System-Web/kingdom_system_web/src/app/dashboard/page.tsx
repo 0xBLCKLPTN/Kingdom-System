@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown'; // Импортируем react-mark
 import { useRouter } from 'next/navigation';
 import styles from './Dashboard.module.css';
 import { useSearchParams } from 'next/navigation'; 
+import Cookie from "js-cookie";
 
 const user = {
   name: "Имя Пользователя",
@@ -28,15 +29,9 @@ const Dashboard: React.FC = () => {
   const [animate, setAnimate] = useState(false);
   const [isFriendsPanelOpen, setFriendsPanelOpen] = useState(false);
   const [releases, setReleases] = useState<any[]>([]);
-  const router = useRouter();
-  const [username, setUsername] = useState<string>("");
+  const router = useRouter(); 
   const searchParams = useSearchParams(); // Получаем параметры URL
-  useEffect(() => {
-    const usernameParam = searchParams.get("username"); // Извлекаем username из параметров
-    if (usernameParam) {
-      setUsername(usernameParam); // Устанавливаем имя пользователя в состояние
-    }
-  }, [searchParams]); // Добавляем searchParams в зависимости
+  const [username, setUsername] = useState<string>(Cookie.get("username") || ""); // Получаем имя пользователя из куков
 
   const toggleTheme = () => {
     setAnimate(true);

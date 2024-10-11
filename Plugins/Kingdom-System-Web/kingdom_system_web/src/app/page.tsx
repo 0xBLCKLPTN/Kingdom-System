@@ -6,7 +6,7 @@ import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
 
-const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize"; // Указание URL для авторизации
+const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -21,15 +21,16 @@ export default function Home() {
     ? "https://raw.githubusercontent.com/0xBLCKLPTN/Kingdom-System/00fba0f093e419d8affffc5a797d24bbf8b1e0c3/Docs/illustrations/white/Kingdom-System.svg"
     : "https://raw.githubusercontent.com/0xBLCKLPTN/Kingdom-System/00fba0f093e419d8affffc5a797d24bbf8b1e0c3/Docs/illustrations/black/Kingdom-System.svg";
 
-    const handleLogin = () => {
-      // Передаем имя пользователя в параметры URL при переходе на страницу Dashboard
-      router.push(`/dashboard?username=${encodeURIComponent(username)}`);
-  
-    };
+  const handleLogin = () => {
+    // Сохраняем имя пользователя в куках
+    Cookie.set('username', username);
+    // Передаем имя пользователя в параметры URL при переходе на страницу Dashboard
+    router.push(`/dashboard?username=${encodeURIComponent(username)}`);
+  };
 
   const handleGitHubLogin = () => {
     const clientId = "YOUR_GITHUB_CLIENT_ID"; // Замените на ваш клиентский ID
-    const redirectUri = encodeURIComponent("http://localhost:3000/auth/github/callback"); // Ваш URL перенаправления
+    const redirectUri = encodeURIComponent("http://localhost:3000/auth/github/callback");
     const scope = "read:user user:email"; // Запрашиваемые разрешения
 
     window.location.href = `${GITHUB_OAUTH_URL}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
@@ -70,7 +71,6 @@ export default function Home() {
           className={`w-full p-3 border border-gray-300 rounded mb-3 transition-all duration-300 ${isDarkMode ? 'bg-gray-800 text-white' : ''} focus:outline-none focus:ring-2 focus:ring-blue-500`}
         />
         
-        {/* Кнопка для входа */}
         <motion.button 
           onClick={handleLogin}
           className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
@@ -80,9 +80,8 @@ export default function Home() {
           Войти
         </motion.button>
 
-        {/* Кнопка для входа через GitHub */}
         <motion.button 
-          onClick={handleGitHubLogin} // Обработка логина через GitHub
+          onClick={handleGitHubLogin}
           className="w-full flex items-center justify-center p-3 mt-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition duration-200"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -101,7 +100,6 @@ export default function Home() {
           Регистрация
         </motion.button>
 
-        {/* Картинка кота */}
         <Image 
           src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/main/Docs/illustrations/Deve.png?raw=true" 
           alt="Котик" 
@@ -125,3 +123,4 @@ export default function Home() {
     </div>
   );
 }
+  

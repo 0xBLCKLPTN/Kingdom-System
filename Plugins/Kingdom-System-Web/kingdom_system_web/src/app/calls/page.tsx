@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Cookie from "js-cookie"; // Импортируем библиотеку для работы с куками.
-import { firestore } from "../firebase";  // Импортируем Firestore
-import { collection, doc, setDoc, onSnapshot, getDoc, updateDoc, deleteDoc } from "firebase/firestore"; // Импорт необходимых методов
+import Cookie from "js-cookie"; 
+import { firestore } from "../firebase"; 
+import { collection, doc, setDoc, onSnapshot, getDoc, updateDoc, deleteDoc } from "firebase/firestore"; 
 import { motion } from "framer-motion";
+import { useRouter } from 'next/navigation'; // Импортируем useRouter
 
 const colors = [
     "#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#33FFA6", 
@@ -12,20 +13,22 @@ const colors = [
 ];
 
 const getColor = (index: number) => {
-    return colors[index % colors.length]; // Возвращаем цвет на основе индекса
+    return colors[index % colors.length]; 
 };
 
 const Calls: React.FC = () => {
-    const [roomName, setRoomName] = useState<string>(''); // Название текущей комнаты
-    const [username, setUsername] = useState<string>(''); // Имя пользователя
+    const [roomName, setRoomName] = useState<string>(''); 
+    const [username, setUsername] = useState<string>(''); 
     const [rooms, setRooms] = useState<string[]>([]);
     const [currentUsers, setCurrentUsers] = useState<string[]>([]);
-    const [currentUserId, setCurrentUserId] = useState<string>(''); // ID текущего пользователя
-    const [creatorId, setCreatorId] = useState<string>(''); // ID создателя комнаты
-    const [showCreateRoom, setShowCreateRoom] = useState<boolean>(false); // Состояние отображения формы создания комнаты
-    const [showUsernamePrompt, setShowUsernamePrompt] = useState<boolean>(true); // Состояние для отображения ввода имени пользователя
+    const [currentUserId, setCurrentUserId] = useState<string>(''); 
+    const [creatorId, setCreatorId] = useState<string>(''); 
+    const [showCreateRoom, setShowCreateRoom] = useState<boolean>(false); 
+    const [showUsernamePrompt, setShowUsernamePrompt] = useState<boolean>(true); 
 
-    // Загрузка имени пользователя из куков при монтировании компонента
+    const router = useRouter(); // Инициализация useRouter
+
+    // Загрузка имени пользователя из куков
     useEffect(() => {
         const cookieUsername = Cookie.get('username');
         if (cookieUsername) {
@@ -42,9 +45,9 @@ const Calls: React.FC = () => {
                 await setDoc(doc(firestore, 'rooms', roomName), {
                     id: roomName,
                     users: [],
-                    creator: currentUserId // Сохраняем ID создателя комнаты
+                    creator: currentUserId 
                 });
-                joinRoom(roomName); // Подключаемся к только что созданной комнате
+                joinRoom(roomName); 
             } catch (error) {
                 console.error("Ошибка при создании комнаты: ", error);
             }
@@ -69,13 +72,13 @@ const Calls: React.FC = () => {
 
             if (users.includes(currentUserId)) {
                 alert("Вы уже находитесь в этой комнате!");
-                return; // Прерываем дальнейшую обработку
+                return; 
             }
 
-            users.push(currentUserId); // Добавляем текущего пользователя в комнату
+            users.push(currentUserId);
             await updateDoc(roomDoc, { users });
             setCurrentUsers(users);
-            setRoomName(room); // Обновляем состояние текущей комнаты
+            setRoomName(room); 
         } else {
             alert("Комната с таким названием не найдена!");
         }
@@ -92,8 +95,8 @@ const Calls: React.FC = () => {
                 const updatedUsers = users.filter(user => user !== currentUserId);
                 await updateDoc(roomDoc, { users: updatedUsers });
                 setCurrentUsers(updatedUsers);
-                setRoomName(''); // Сбросить название текущей комнаты
-                setCreatorId(''); // Сбросить ID создателя
+                setRoomName(''); 
+                setCreatorId(''); 
             }
         }
     };
@@ -135,7 +138,7 @@ const Calls: React.FC = () => {
         const unsubscribe = onSnapshot(roomDoc, (snapshot) => {
             const users = snapshot.data()?.users || [];
             setCurrentUsers(users);
-            setCreatorId(snapshot.data()?.creator || ''); // Указываем ID создателя комнаты
+            setCreatorId(snapshot.data()?.creator || ''); 
         });
 
         return () => unsubscribe();
@@ -167,13 +170,21 @@ const Calls: React.FC = () => {
             return;
         }
 
-        setCurrentUserId(username); // Устанавливаем имя пользователя
-        Cookie.set('username', username); // Сохраняем имя пользователя в куках
-        setShowUsernamePrompt(false); // Скрываем меню ввода имени пользователя
+        setCurrentUserId(username); 
+        Cookie.set('username', username); 
+        setShowUsernamePrompt(false); 
     };
 
     return (
         <div className="flex h-screen">
+            {/* Кнопка возврата на /dashboard */}
+            <motion.button 
+                onClick={() => router.push('/dashboard')}
+                className="absolute top-4 left-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+            >
+                Вернуться
+            </motion.button>
+
             {/* Состояние ввода имени пользователя */}
             {showUsernamePrompt ? (
                 <div className="flex-1 flex justify-center items-center bg-gray-900 text-white p-4">
@@ -198,12 +209,18 @@ const Calls: React.FC = () => {
                 <>
                     {/* Боковая панель с комнатами */}
                     <div className="w-1/4 bg-gray-800 p-4 relative">
+                    <motion.button 
+                        onClick={() => router.push('/dashboard')}
+                        className=" bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+                    >
+                        Вернуться
+                    </motion.button>
                         <h2 className="text-lg font-bold mb-4 text-white">Доступные комнаты</h2>
                         <ul className="space-y-2">
                             {rooms.map((room) => (
                                 <li key={room} className="flex items-center justify-between">
                                     <motion.button 
-                                        onClick={() => joinRoom(room)} // Подключение к комнате
+                                        onClick={() => joinRoom(room)} 
                                         className="flex items-center w-full text-left p-2 rounded-full transition duration-300 hover:bg-gray-700"
                                     >
                                         <div 
@@ -213,12 +230,12 @@ const Calls: React.FC = () => {
                                         </div>
                                         <span className="text-white">{room}</span>
                                     </motion.button>
-                                    {currentUserId === creatorId && ( // Отображаем кнопку удаления только для создателя комнаты
+                                    {currentUserId === creatorId && (
                                         <motion.button
                                             onClick={() => deleteRoom(room)}
                                             className="text-red-500 ml-2"
                                         >
-                                            🗑️ {/* Значок мусорного ведра */}
+                                            🗑️ 
                                         </motion.button>
                                     )}
                                 </li>
