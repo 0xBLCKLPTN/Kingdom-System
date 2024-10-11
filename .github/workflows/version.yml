@@ -1,60 +1,38 @@
-name: Autoversion
+name: Versioning
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  create-release:
+  update-version:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Read current version
-      id: read_version
-      run: |
-        CURRENT_VERSION=$(cat VERSION)
-        echo "Current version: $CURRENT_VERSION"
-        echo "::set-output name=current_version::$CURRENT_VERSION"
-
-    - name: Increment version
-      id: increment_version
-      run: |
-        CURRENT_VERSION=${{ steps.read_version.outputs.current_version }}
-        echo "Current version: $CURRENT_VERSION"
-        
-        # Разбор текущей версии
-        if [[ $CURRENT_VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\+(.+)$ ]]; then
-          major=${BASH_REMATCH[1]}
-          minor=${BASH_REMATCH[2]}
-          patch=${BASH_REMATCH[3]}
-          COMMIT_HASH=$(git rev-parse --short HEAD)
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Read current version
+        id: get_version
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+      
+      - name: Increment version
+        run: |
+          IFS='.' read -r major minor patch <<< "$VERSION"
           new_patch=$((patch + 1))
-          new_version="$major.$minor.$new_patch+$COMMIT_HASH"
-          echo "New version: $new_version"
+          new_version="$major.$minor.$new_patch"
           echo "$new_version" > VERSION
-          echo "::set-output name=new_version::$new_version"
-        else
-          echo "Error: Version format is incorrect. Expected format is 0.0.1+hash."
-          exit 1
-        fi
+          echo "New version: $new_version"
 
-    - name: Create Release
-      id: create_release
-      run: |
-        VERSION=${{ steps.increment_version.outputs.new_version }}
-        GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        response=$(curl -s -X POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/releases \
-          -d "{\"tag_name\":\"$VERSION\",\"name\":\"Release $VERSION\",\"body\":\"Release version $VERSION\"}")
-        echo "Release response: $response"
-        echo "::set-output name=release_response::$response"
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add VERSION
+          git commit -m "Bump version to $new_version"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Summarize Work
-      run: |
-        echo "Release created successfully!"
-        echo "Version: ${{ steps.increment_version.outputs.new_version }}"
-        echo "Response: ${{ steps.create_release.outputs.release_response }}"
