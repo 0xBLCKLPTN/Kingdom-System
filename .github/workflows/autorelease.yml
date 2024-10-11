@@ -45,7 +45,7 @@ jobs:
       run: |
         VERSION=${{ steps.read_version.outputs.version }}
         mkdir -p artifacts
-        cp -r . artifacts/source
+        rsync -a --exclude=artifacts . artifacts/source/
         zip -r artifacts/source.zip artifacts/source
         tar -czf artifacts/source.tar.gz -C artifacts source
         7z a artifacts/source.7z artifacts/source
