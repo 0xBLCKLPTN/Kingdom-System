@@ -72,8 +72,21 @@ jobs:
             "https://uploads.github.com/repos/${{ github.repository }}/releases/$release_id/assets?name=$(basename "$asset")"
         done
 
+    - name: Get Avatars of Contributors
+      id: get_avatars
+      run: |
+        CONTRIBUTORS=$(echo "${{ steps.get_contributors.outputs.contributors }}" | awk '{print $2}' | uniq)
+        AVATARS=""
+        for contributor in $CONTRIBUTORS; do
+          AVATAR=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/users/$contributor | jq -r '.avatar_url')
+          AVATARS+="<img src=\"$AVATAR\" width=\"50\" height=\"50\"/> "
+        done
+        echo "Avatars: $AVATARS"
+        echo "::set-output name=avatars::$AVATARS"
+
     - name: Summarize Work
       run: |
         echo "Release created successfully!"
         echo "Version: ${{ steps.read_version.outputs.version }}"
         echo "Response: ${{ steps.create_release.outputs.release_response }}"
+        echo "Contributors Avatars: ${{ steps.get_avatars.outputs.avatars }}"
