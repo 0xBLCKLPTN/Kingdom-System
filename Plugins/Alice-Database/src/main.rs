@@ -28,6 +28,7 @@ pub mod database {
 pub struct MyDatabaseService {
     db: Arc<RwLock<Database>>, // Changed to Arc<RwLock<Database>>
 }
+
 #[tonic::async_trait]
 impl DatabaseService for MyDatabaseService {
     async fn create_table(&self, request: Request<CreateTableRequest>) -> Result<Response<CreateTableResponse>, Status> {
