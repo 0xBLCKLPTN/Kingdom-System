@@ -1,4 +1,4 @@
-name: Create Release
+name: Autoversion
 
 on:
   push:
@@ -23,13 +23,24 @@ jobs:
     - name: Increment version
       id: increment_version
       run: |
-        IFS='.+-' read -r major minor patch <<< "${{ steps.read_version.outputs.current_version }}"
-        new_patch=$((patch + 1))
-        COMMIT_HASH=$(git rev-parse --short HEAD)
-        new_version="$major.$minor.$new_patch+$COMMIT_HASH"
-        echo "New version: $new_version"
-        echo "$new_version" > VERSION
-        echo "::set-output name=new_version::$new_version"
+        CURRENT_VERSION=${{ steps.read_version.outputs.current_version }}
+        echo "Current version: $CURRENT_VERSION"
+        
+        # Разбор текущей версии
+        if [[ $CURRENT_VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\+(.+)$ ]]; then
+          major=${BASH_REMATCH[1]}
+          minor=${BASH_REMATCH[2]}
+          patch=${BASH_REMATCH[3]}
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          new_patch=$((patch + 1))
+          new_version="$major.$minor.$new_patch+$COMMIT_HASH"
+          echo "New version: $new_version"
+          echo "$new_version" > VERSION
+          echo "::set-output name=new_version::$new_version"
+        else
+          echo "Error: Version format is incorrect. Expected format is 0.0.1+hash."
+          exit 1
+        fi
 
     - name: Create Release
       id: create_release
