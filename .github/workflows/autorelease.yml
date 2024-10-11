@@ -1,4 +1,4 @@
-name: Create Release
+name: Create Release with Assets and Details
 
 on:
   push:
@@ -20,6 +20,36 @@ jobs:
         echo "Version: $VERSION"
         echo "::set-output name=version::$VERSION"
 
+    - name: Get commit list
+      id: get_commits
+      run: |
+        COMMITS=$(git log --oneline --pretty=format:'* %h - %s by %an' | head -n 10)
+        echo "Commit list: $COMMITS"
+        echo "::set-output name=commits::$COMMITS"
+
+    - name: Get top contributors
+      id: get_contributors
+      run: |
+        CONTRIBUTORS=$(git shortlog -sn | head -n 5)
+        echo "Top contributors: $CONTRIBUTORS"
+        echo "::set-output name=contributors::$CONTRIBUTORS"
+
+    - name: Calculate size of source code
+      id: calculate_size
+      run: |
+        SIZE=$(du -sh . | cut -f1)
+        echo "Source code size: $SIZE"
+        echo "::set-output name=size::$SIZE"
+
+    - name: Create archives
+      run: |
+        VERSION=${{ steps.read_version.outputs.version }}
+        mkdir -p artifacts
+        cp -r . artifacts/source
+        zip -r artifacts/source.zip artifacts/source
+        tar -czf artifacts/source.tar.gz -C artifacts source
+        7z a artifacts/source.7z artifacts/source
+
     - name: Create Release
       id: create_release
       run: |
@@ -27,9 +57,20 @@ jobs:
         GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
         response=$(curl -s -X POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/releases \
-          -d "{\"tag_name\":\"$VERSION\",\"name\":\"Release $VERSION\",\"body\":\"Release version $VERSION\"}")
+          -d "{\"tag_name\":\"$VERSION\",\"name\":\"Release $VERSION\",\"body\":\"Release version $VERSION\\n\n### Commits\\n${{ steps.get_commits.outputs.commits }}\\n\n### Top Contributors\\n${{ steps.get_contributors.outputs.contributors }}\\n\n### Source Code Size\\n${{ steps.calculate_size.outputs.size }}\"}")
         echo "Release response: $response"
         echo "::set-output name=release_response::$response"
+        release_id=$(echo "$response" | jq -r '.id')
+
+    - name: Upload release assets
+      run: |
+        VERSION=${{ steps.read_version.outputs.version }}
+        GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+        for asset in artifacts/*; do
+          curl -s -X POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Content-Type: application/octet-stream" \
+            --data-binary @"$asset" \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/$release_id/assets?name=$(basename "$asset")"
+        done
 
     - name: Summarize Work
       run: |
