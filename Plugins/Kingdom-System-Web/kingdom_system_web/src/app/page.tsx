@@ -5,6 +5,7 @@ import Image from "next/image";
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline'; 
 import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
+import Cookie from "js-cookie"; // Импортируем библиотеку для работы с куками
 
 const GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
 
