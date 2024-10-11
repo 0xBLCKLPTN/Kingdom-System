@@ -1,0 +1,38 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Read version
+      id: read_version
+      run: |
+        VERSION=$(cat VERSION)
+        echo "Version: $VERSION"
+        echo "::set-output name=version::$VERSION"
+
+    - name: Create Release
+      id: create_release
+      run: |
+        VERSION=${{ steps.read_version.outputs.version }}
+        GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+        response=$(curl -s -X POST -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/releases \
+          -d "{\"tag_name\":\"$VERSION\",\"name\":\"Release $VERSION\",\"body\":\"Release version $VERSION\"}")
+        echo "Release response: $response"
+        echo "::set-output name=release_response::$response"
+
+    - name: Summarize Work
+      run: |
+        echo "Release created successfully!"
+        echo "Version: ${{ steps.read_version.outputs.version }}"
+        echo "Response: ${{ steps.create_release.outputs.release_response }}"
