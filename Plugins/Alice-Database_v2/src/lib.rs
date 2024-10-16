@@ -14,6 +14,7 @@ use instance_manager::ADBInstanceManager;
 
 use log::{ info, error };
 
+/*
 #[tokio::main]
 async fn main() {
 	let mut instance_manager = match ADBInstanceManager::find_all().await {
@@ -28,3 +29,4 @@ async fn main() {
 	println!("Instance Manager: {:#?}", instance_manager);
 	println!("Hello World!");
 }
+*/
