@@ -1,38 +1,80 @@
-name: Versioning
+name: Update Version
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  update-version:
+  update_version:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Read current version
-        id: get_version
-        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
-      
-      - name: Increment version
+
+      - name: Get commit count and last commit hash
+        id: get_info
         run: |
-          IFS='.' read -r major minor patch <<< "$VERSION"
-          new_patch=$((patch + 1))
-          new_version="$major.$minor.$new_patch"
-          echo "$new_version" > VERSION
-          echo "New version: $new_version"
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_ENV
+          echo "last_commit_hash=$LAST_COMMIT_HASH" >> $GITHUB_ENV
+
+      - name: Create VERSION file
+        run: |
+          # Формируем версию
+
+          
+          echo "$VERSION" > VERSION
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add VERSION
-          git commit -m "Bump version to $new_version"
+          git commit -m "Update VERSION file"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+name: Update Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Get current version
+      id: get_version
+      run: |
+        LAST_COMMIT_HASH=$(git rev-parse HEAD) # Получаем полный хеш
+        VERSION=$(cat VERSION)
+        echo "Current version: $VERSION"
+        echo "::set-output name=current_version::$VERSION"
+    
+    - name: Increment version
+      id: increment_version
+      run: |
+        IFS='.' read -r major minor patch <<< "${{ steps.get_version.outputs.current_version }}"
+        new_patch=$((patch + 1))
+        new_version="$major.$minor.$new_patch"
+        echo "New version: $new_version"
+        echo "$new_version" > VERSION
+        echo "::set-output name=new_version::$new_version"
+    
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add VERSION
+        git commit -m "Update version to ${{ steps.increment_version.outputs.new_version }}" || echo "No changes to commit"
+        git push
