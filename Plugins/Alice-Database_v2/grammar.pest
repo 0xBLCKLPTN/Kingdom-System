@@ -1,0 +1,41 @@
+alpha = { 'a'..'z' | 'A'..'Z' }
+digit = { '0'..'9' }
+
+ident = { !digit ~ (alpha | digit)+ }
+
+// Math
+math = { digit ~ ident ~ digit }
+
+
+// WORK WITH INSTANCES ================================>
+get_all_instances = { "GET INSTANCES" }
+select_instance = { "SELECT INSTANCE " ~ ident }
+print_instance = { "PRINT INSTANCE " ~ ident }
+delete_instance = { "DELETE INSTANCE " ~ ident }
+check_instance_on_exists = { "CHECK INSTANCE ON EXISTS " ~ ident }
+
+
+// JSONEngine - Collections
+create_collection = { "CREATE COLLECTION " ~ ident }
+remove_collection = { "DELETE COLLECTION " ~ ident }
+add_document_to_collection = { "ADD DOCUMENT " ~ ident ~ " TO " ~ ident}
+remove_document_from_collection = {"DELETE DOCUMENT " ~ ident ~ " IN " ~ ident}
+
+
+// ALL COMMANDS =====================================>
+ident_list = _{ (
+    select_instance |
+    get_all_instances |
+    print_instance |
+    math |
+    create_collection |
+    remove_collection |
+    add_document_to_collection |
+    remove_document_from_collection 
+    
+    
+    
+    
+    ) ~ ";" }
+          // ^
+          // ident_list rule is silent which means it produces no tokens

@@ -1,0 +1,39 @@
+# Загрузка необходимых внешних репозиториев
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# <========== Настройка Rust для проекта ===================
+http_archive(
+    name = "rules_rust",
+    integrity = "sha256-Weev1uz2QztBlDA88JX6A1N72SucD1V8lBsaliM0TTg=",
+    urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.48.0/rules_rust-v0.48.0.tar.gz"],
+)
+
+# Загрузка зависимостей для Rust
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
+rules_rust_dependencies()
+rust_register_toolchains()
+
+# Загрузка зависимостей для Rust Analyzer для улучшенной разработки
+load("@rules_rust//tools/rust_analyzer:deps.bzl", "rust_analyzer_dependencies")
+rust_analyzer_dependencies()
+
+# Загрузка зависимостей для управления версиями crate
+load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
+crate_universe_dependencies()
+
+# Определение репозитория для crate
+load("@rules_rust//crate_universe:defs.bzl", "crates_repository", "crate")
+crates_repository(
+    name = "crate_index",
+    cargo_lockfile = "//:Cargo.lock",          # Путь к вашему Cargo.lock
+    lockfile = "//:Cargo.Bazel.lock",          # Путь к вашему замороженному файлу Bazel
+    manifests = [
+        "//:Cargo.toml",                       # Путь к вашему Cargo.toml
+    ],
+    # Должен соответствовать версии, представленной текущим зарегистрированным `rust_toolchain`.
+    rust_version = "1.81.0",
+)
+
+# Загрузка всех crated из crate_index
+load("@crate_index//:defs.bzl", "crate_repositories")
+crate_repositories()
