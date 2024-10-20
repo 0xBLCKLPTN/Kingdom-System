@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["log_engine", "json_engine"]
+default = ["log_engine"]
 log_engine = []
-json_engine = []
+#json_engine = []
 
 [dependencies]
 aes = "0.8.4"
