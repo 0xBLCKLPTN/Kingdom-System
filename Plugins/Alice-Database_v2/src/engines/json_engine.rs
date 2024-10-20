@@ -1,31 +1,60 @@
 use log::{info, warn, error};
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
+use std::collections::HashMap;
+
+use serde_json::Value;
+use serde_json::Map;
 
 // Define the JSONEngine struct
 #[derive(Debug, Clone)]
 pub struct JSONEngine {
     pub name: String,
-    pub data: Vec<String>,
+    pub data: Vec<Map<String, Value>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Sort {
+    pub data: Vec<HashMap<String, Value>>,
 }
 
 impl JSONEngine {
     pub fn new(name: String) -> Self {
+        let mut data: Vec<Map<String,Value>> = vec![];
         info!("Creating JSON Engine...");
-        Self { name, data: Vec::new() }
+        Self { name, data }
+    }
+    
+    pub fn insert_one(&mut self, new_data: Value) -> String {
+        self.data.push(new_data);
+        println!("SELF DATA: {:#?}", self.data);
     }
 
-    // Add data to the JSONEngine
-    pub fn add_data(&mut self, new_data: &str) {
-        info!("Adding data to JSON Engine...");
-        self.data.push(new_data.to_string());
+    pub fn insert_many(&mut self) -> Vec<String> {
+        todo!();
     }
 
-    // Retrieve all data (for simplicity, returning as a joined string)
-    pub fn get_data(&self) -> String {
-        self.data.join("\n")
+    pub fn find_one(&self) {
+        todo!();
     }
+
+    pub fn find_all(&self) {
+        todo!();
+    }
+
+    pub fn find_with_filter(&self) {
+        todo!();
+    }
+
+    pub fn commit(&self) {
+        todo!();
+    }
+    
 }
+
+
+
+
 
 // C bindings
 #[no_mangle]
