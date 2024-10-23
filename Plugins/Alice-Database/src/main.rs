@@ -7,8 +7,6 @@ use simplelog::*;
 use chrono::Local;
 use std::env; // Import this for getting the home directory
 
-mod tests;
-use tests::*;
 
 // Define constants for the root path and log path
 const ROOT_DIR: &str = "Alice-Database-Data";
