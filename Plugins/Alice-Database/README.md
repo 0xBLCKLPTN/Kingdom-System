@@ -1,4 +1,8 @@
-# Alice Database Management
+<div align="center">
+  <img src="https://github.com/0xBLCKLPTN/Kingdom-System/blob/alice_database-dev/Docs/illustrations/alice_db_logo.png"/>
+</div>
+
+# Alice Database
 
 This module implements a simple collection and document management system for storing and manipulating JSON data on the filesystem. It utilizes Serde for JSON serialization/deserialization and logs operations for debugging purposes.
 
