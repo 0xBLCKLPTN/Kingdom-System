@@ -1,0 +1,4 @@
+12:39:29 [TRACE] (1) Alice_Database: [src/main.rs:168] Starting Collection Manager...
+12:39:29 [TRACE] (1) Alice_Database: [src/main.rs:175] Created collection: collection1
+12:39:29 [TRACE] (1) Alice_Database: [src/main.rs:186] Created document: document4.json in collection: collection1
+12:39:29 [TRACE] (1) Alice_Database: [src/main.rs:193] Successfully found document: document4.json

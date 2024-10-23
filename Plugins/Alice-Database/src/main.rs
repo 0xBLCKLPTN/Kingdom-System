@@ -1,499 +1,405 @@
-use tonic::{transport::Server, Request, Response, Status};
-use chrono::{DateTime, Utc};
-//use database::{database_service_server::{DatabaseService, DatabaseServiceServer}, CreateTableRequest, CreateTableResponse, InsertIntoRequest, InsertIntoResponse, FindInRequest, FindInResponse};
+use std::fs;
+use std::io::{self, Read, Write};
+use std::path::{PathBuf, Path};
+use serde_json::{json, Value, Result as JsonResult};
+use log::{info, error, trace};
+use simplelog::*;
+use chrono::Local;
+use std::env; // Import this for getting the home directory
 
-use database::{database_service_server::{DatabaseService, DatabaseServiceServer}, CreateTableRequest, DataResponse ,CreateTableResponse, DropTableRequest, DropTableResponse, LoadTableRequest, LoadTableResponse, InsertIntoRequest, InsertIntoResponse, DeleteFromRequest, DeleteFromResponse, FindInRequest, FindInResponse, GetAllFromResponse, GetAllFromRequest};
+mod tests;
+use tests::*;
 
+// Define constants for the root path and log path
+const ROOT_DIR: &str = "Alice-Database-Data";
+const ADB_DATA_DIR: &str = "ADB_Data";
+const JSON_ENGINE_DIR: &str = "json_engine";
+const ADB_LOGS_DIR: &str = "ADB_Logs";
 
-pub mod database {
-    tonic::include_proto!("database");
-}
-
-#[derive(Default)]
-pub struct MyDatabaseService {
-    db: Arc<RwLock<Database>>, // Changed to Arc<RwLock<Database>>
-}
-
-#[tonic::async_trait]
-impl DatabaseService for MyDatabaseService {
-    async fn create_table(&self, request: Request<CreateTableRequest>) -> Result<Response<CreateTableResponse>, Status> {
-        let table_name = request.into_inner().name;
-
-        let mut db = self.db.write().await;
-        db.create_table(&table_name).await.map_err(|e| Status::internal(e.to_string()))?;
-        info!("Table {} created!", table_name);
-        Ok(Response::new(CreateTableResponse { message: format!("Table {} created", table_name) }))
-    }
-
-    async fn drop_table(&self, request: Request<DropTableRequest>) -> Result<Response<DropTableResponse>, Status> {
-        let table_name = request.into_inner().name;
-
-        let mut db = self.db.write().await;
-        db.drop_table(&table_name).await.map_err(|e| Status::internal(e.to_string()))?;
-        info!("Table {} dropped!", table_name);
-        Ok(Response::new(DropTableResponse { message: format!("Table {} dropped", table_name) }))
-    }
-
-    async fn load_table(&self, request: Request<LoadTableRequest>) -> Result<Response<LoadTableResponse>, Status> {
-        let table_name = request.into_inner().name;
-
-        let mut db = self.db.write().await;
-        db.load_table(&table_name).await.map_err(|e| Status::internal(e.to_string()))?;
-        info!("Table {} loaded!", table_name);
-        Ok(Response::new(LoadTableResponse { message: format!("Table {} loaded", table_name) }))
-    }
-
-    async fn insert_into(&self, request: Request<InsertIntoRequest>) -> Result<Response<InsertIntoResponse>, Status> {
-        let req = request.into_inner();
-        let table_name = req.table_name;
-        let data = req.data; // Adjust the data parsing if needed
-
-        let mut db = self.db.write().await;
-        db.insert_into(&table_name, data).await.map_err(|e| Status::internal(e.to_string()))?;
-        info!("Item inserted into {} table!", table_name);
-        Ok(Response::new(InsertIntoResponse { message: "Insert successful".into() }))
-    }
-
-    async fn delete_from(&self, request: Request<DeleteFromRequest>) -> Result<Response<DeleteFromResponse>, Status> {
-        let req = request.into_inner();
-        let table_name = req.table_name;
-        let id = req.id;
-
-        let mut db = self.db.write().await;
-        db.delete_from(&table_name, &id).await.map_err(|e| Status::internal(e.to_string()))?;
-        info!("Item deleted from {}!", table_name);
-        Ok(Response::new(DeleteFromResponse { message: "Delete successful".into() }))
-    }
-
-    async fn find_in(&self, request: Request<FindInRequest>) -> Result<Response<FindInResponse>, Status> {
-        let req = request.into_inner();
-        let table_name = req.table_name;
-        let id = req.id;
-        info!("Find in request from table {}", table_name);
-        let db = self.db.read().await;
-        match db.find_in(&table_name, &id).await {
-            Ok(Some(item)) => Ok(Response::new(FindInResponse { data: serde_json::to_string(&item).unwrap(), message: "Item found".into() })),
-            Ok(None) => Ok(Response::new(FindInResponse { data: "".into(), message: "Item not found".into() })),
-            Err(e) => Err(Status::internal(e.to_string())),
-        }
-    }
-    async fn get_all_from(&self, request: Request<GetAllFromRequest>) -> Result<Response<GetAllFromResponse>, Status> {
-
-        let table_name = request.into_inner().table_name;
-        let db = self.db.read().await;
-
-        info!("Get all from request from table {}", table_name);
-        match db.get_all(&table_name).await {
-            Ok(generic_items) => {
-                let items: Vec<DataResponse> = generic_items
-                .iter()
-                .map(|item| DataResponse {
-                    id: item.id.clone(), // Get the ID from GenericItem
-                    data: item.data.clone(), // Get the data from GenericItem
-                })
-                .collect();
-
-                Ok(Response::new(GetAllFromResponse {
-                    data: items,
-                    message: "Items retrieved successfully".into(),
-                }))
-            }
-            Err(e) => Err(Status::internal(e.to_string())),
-
-        }
-
-    }
-
-}
-
-
-
-fn print_ascii() {
-    println!(r"
-    @---------------------------------------------------------------@
-    |       {} ______     __         __     ______     ______{}         |
-    |       {}/\  __ \   /\ \       /\ \   /\  ___\   /\  ___\{}        |
-    |       {}\ \  __ \  \ \ \____  \ \ \  \ \ \____  \ \  __\{}        |
-    |        {}\ \_\ \_\  \ \_____\  \ \_\  \ \_____\  \ \_____\{}      |
-    |         {}\/_/\/_/   \/_____/   \/_/   \/_____/   \/_____/{}      |
-    |                                                               |
-    |                    {} _____     ______{}                          |
-    |                    {}/\  __-.  /\  == \{}                         |
-    |                    {}\ \ \/\ \ \ \  __<{}                         |
-    |                     {}\ \____-  \ \_____\{}                       |
-    |                      {}\/____/   \/_____/{}                       |
-    |                                                               |
-    @---------------------------------------------------------------@
-    ",
-    color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-             color::Fg(color::Yellow), color::Fg(color::Reset),
-    );
-}
-
-macro_rules! adbprint {
-    ($($arg:tt)*) => {
-        println!("[ {}ADB{} ]=: {}", color::Fg(color::Yellow), color::Fg(color::Reset), format!($($arg)*));
-    };
-}
-
+/// A struct representing a document in the database.
+///
+/// A `Document` contains its name, file path, and its content stored as a JSON `Value`.
 #[derive(Debug)]
-pub enum DatabaseError {
-    IoError(io::Error),
-    SerializationError(serde_json::Error),
-    NotFound(String),
-    TableAlreadyExists(String),
-    TableDoesNotExist(String),
-    TonicTransportError(tonic::transport::Error), // Added
+pub struct Document {
+    pub name: String,
+    pub path: PathBuf,
+    pub json_value: Option<Value>,
 }
 
-impl From<tonic::transport::Error> for DatabaseError {
-    fn from(err: tonic::transport::Error) -> Self {
-        DatabaseError::TonicTransportError(err)
+/// A struct representing a collection of documents.
+///
+/// A `Collection` holds a name and a list of associated `Document`s.
+#[derive(Debug)]
+pub struct Collection {
+    pub name: String,
+    pub documents: Vec<Document>,
+}
+
+impl Collection {
+    // Method to get a document by name
+    pub fn get_document(&self, name: &str) -> Option<&Document> {
+        self.documents.iter().find(|doc| doc.name == name)
     }
-}
 
-impl std::fmt::Display for DatabaseError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self)
+    /// Retrieve a mutable reference to a document by its name.
+    ///
+    /// # Parameters
+    /// - `name`: The name of the document to retrieve.
+    ///
+    /// # Returns
+    /// An `Option` containing a mutable reference to the `Document` if found,
+    /// or `None` if not found.
+    pub fn get_document_mut(&mut self, name: &str) -> Option<&mut Document> {
+        self.documents.iter_mut().find(|doc| doc.name == name)
     }
-}
 
-impl std::error::Error for DatabaseError {}
+    // Method to add a new document to the collection
+    pub fn add_document(&mut self, name: &str, content: &str) -> io::Result<()> {
+        let collection_path = Path::new(&self.path()).join(&self.name);
+        fs::create_dir_all(&collection_path)?;
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub struct GenericItem {
-    id: String,
-    data: String,
-}
+        let doc_path = collection_path.join(name); // Correctly construct the document path
+        let mut file = fs::File::create(&doc_path)?;
+        file.write_all(content.as_bytes())?;
 
-impl GenericItem {
-    pub fn new<T: Serialize>(data: T) -> Result<Self, DatabaseError> {
-        let id = Uuid::new_v4().to_string();
-        let data = serde_json::to_string(&data).map_err(DatabaseError::SerializationError)?;
-        Ok(Self { id, data })
-    }
-}
-
-pub struct Table {
-    name: String,
-    items: HashMap<String, GenericItem>, // Хранит элементы таблицы
-}
-
-impl Table {
-    pub fn new(name: &str) -> Self {
-        Table {
+        // Create a new Document instance
+        let new_document = Document {
             name: name.to_string(),
-            items: HashMap::new(),
+            path: doc_path.clone(),
+            json_value: parse_json_data(content).ok(),
+        };
+        self.documents.push(new_document);
+        Ok(())
+    }
+
+    // Method to delete a document from the collection
+    pub fn delete_document(&mut self, name: &str) -> io::Result<()> {
+        if let Some(doc) = self.documents.iter().find(|doc| doc.name == name) {
+            fs::remove_file(&doc.path)?;
+            self.documents.retain(|doc| doc.name != name);
+            Ok(())
+        } else {
+            Err(io::Error::new(io::ErrorKind::NotFound, "Document not found"))
         }
     }
 
-    pub async fn load(&mut self, path: &Path) -> Result<(), DatabaseError> {
-        let contents = async_fs::read_to_string(path).await.map_err(DatabaseError::IoError)?;
-        self.items = serde_json::from_str(&contents).map_err(DatabaseError::SerializationError)?;
-        Ok(())
-    }
-
-    pub async fn save(&self, path: &Path) -> Result<(), DatabaseError> {
-        let serialized = serde_json::to_string(&self.items).map_err(DatabaseError::SerializationError)?;
-        async_fs::write(path, serialized).await.map_err(DatabaseError::IoError)?;
-        Ok(())
-    }
-
-    pub async fn insert<T: Serialize>(&mut self, data: T) -> Result<(), DatabaseError> {
-        let item = GenericItem::new(data)?;
-        self.items.insert(item.id.clone(), item);
-        Ok(())
-    }
-
-    pub async fn delete(&mut self, id: &str) -> Result<(), DatabaseError> {
-        if self.items.remove(id).is_none() {
-            return Err(DatabaseError::NotFound(id.to_string()));
-        }
-        Ok(())
-    }
-
-    pub async fn find_by_id(&self, id: &str) -> Option<&GenericItem> {
-        self.items.get(id)
+    fn path(&self) -> PathBuf {
+        let home_dir = env::home_dir().expect("Failed to get home directory");
+        home_dir.join(ROOT_DIR).join(ADB_DATA_DIR).join(JSON_ENGINE_DIR)
     }
 }
 
-#[derive(Default)]
-pub struct Database {
-    path: PathBuf,
-    tables: HashMap<String, Table>, // Хранит таблицы
-    cache: RwLock<HashMap<String, GenericItem>>, // Кэш
+/// A struct to manage multiple collections of documents.
+pub struct CollectionManager {
+    collections: Vec<Collection>,
 }
 
-impl Database {
-    pub fn new(path: &str) -> Self {
-        let path_buf = PathBuf::from(path);
-        if !path_buf.exists() {
-            std::fs::create_dir_all(&path_buf).expect("Failed to create database directory");
-        }
-        Database {
-            path: path_buf,
-            tables: HashMap::new(),
-            cache: RwLock::new(HashMap::new()),
+impl CollectionManager {
+    /// Create a new `CollectionManager`.
+    ///
+    /// # Parameters
+    /// - `root`: The path to the root directory for data storage.
+    ///
+    /// # Returns
+    /// A new instance of `CollectionManager`.
+    pub fn new(root: &Path) -> Self {
+        let collections = get_exists_collections(root);
+        CollectionManager { collections }
+    }
+
+    /// Retrieve a mutable reference to a collection by its name.
+    ///
+    /// # Parameters
+    /// - `name`: The name of the collection to retrieve.
+    ///
+    /// # Returns
+    /// An `Option` containing a mutable reference to the `Collection`, if found.
+    pub fn get_collection_mut(&mut self, name: &str) -> Option<&mut Collection> {
+        self.collections.iter_mut().find(|col| col.name == name)
+    }
+
+    /// Add a new collection.
+    ///
+    /// # Parameters
+    /// - `name`: The name of the collection to create.
+    ///
+    /// # Returns
+    /// An `Option` containing a mutable reference to the newly added `Collection`.
+    pub fn add_collection(&mut self, name: &str) -> Option<&mut Collection> {
+        let collection_path = Path::new(&self.root_path()).join(name);
+        fs::create_dir_all(&collection_path).ok()?; // Create the directory for new collection
+
+        let new_collection = Collection {
+            name: name.to_string(),
+            documents: vec![],
+        };
+
+        self.collections.push(new_collection);
+        self.collections.last_mut() // Return a mutable reference to the newly added collection
+    }
+
+    /// Get a collection by name.
+    ///
+    /// # Parameters
+    /// - `name`: The name of the collection to retrieve.
+    ///
+    /// # Returns
+    /// An `Option` containing a reference to the `Collection`, if found.
+    pub fn get_collection(&self, name: &str) -> Option<&Collection> {
+        self.collections.iter().find(|col| col.name == name)
+    }
+
+    /// Get a document from a specific collection.
+    ///
+    /// # Parameters
+    /// - `collection_name`: The name of the collection the document belongs to.
+    /// - `document_name`: The name of the document to retrieve.
+    ///
+    /// # Returns
+    /// An `Option` containing a reference to the `Document`, if found.
+    pub fn get_document(&self, collection_name: &str, document_name: &str) -> Option<&Document> {
+        self.get_collection(collection_name)?.get_document(document_name)
+    }
+
+    fn root_path(&self) -> PathBuf {
+        let home_dir = env::home_dir().expect("Failed to get home directory");
+        home_dir.join(ROOT_DIR).join(ADB_DATA_DIR).join(JSON_ENGINE_DIR)
+    }
+}
+
+impl Document {
+    /// Update a field in the document.
+    ///
+    /// # Parameters
+    /// - `key`: The key of the field to update.
+    /// - `value`: The new value for the field.
+    ///
+    /// # Returns
+    /// A result indicating success or failure.
+    pub fn update_rows(&mut self, key: &str, value: &Value) -> io::Result<()> {
+        if let Some(json_value) = &mut self.json_value {
+            if let Some(obj) = json_value.as_object_mut() {
+                obj.insert(key.to_string(), value.clone());
+                let updated_content = serde_json::to_string_pretty(json_value)?;
+                let mut file = fs::File::create(&self.path)?;
+                file.write_all(updated_content.as_bytes())?;
+                Ok(())
+            } else {
+                Err(io::Error::new(io::ErrorKind::InvalidData, "JSON is not an object"))
+            }
+        } else {
+            Err(io::Error::new(io::ErrorKind::InvalidData, "Document does not contain valid JSON"))
         }
     }
 
-    pub async fn create_table(&mut self, name: &str) -> Result<(), DatabaseError> {
-        if self.tables.contains_key(name) {
-            return Err(DatabaseError::TableAlreadyExists(name.to_string()));
+    /// Delete a field in the document.
+    ///
+    /// # Parameters
+    /// - `key`: The key of the field to delete.
+    ///
+    /// # Returns
+    /// A result indicating success or failure.
+    pub fn delete_rows(&mut self, key: &str) -> io::Result<()> {
+        if let Some(json_value) = &mut self.json_value {
+            if let Some(obj) = json_value.as_object_mut() {
+                obj.remove(key);
+                let updated_content = serde_json::to_string_pretty(json_value)?;
+                let mut file = fs::File::create(&self.path)?;
+                file.write_all(updated_content.as_bytes())?;
+                Ok(())
+            } else {
+                Err(io::Error::new(io::ErrorKind::InvalidData, "JSON is not an object"))
+            }
+        } else {
+            Err(io::Error::new(io::ErrorKind::InvalidData, "Document does not contain valid JSON"))
         }
-
-        self.tables.insert(name.to_string(), Table::new(name));
-        let table_path = self.path.join(format!("{}.json", name));
-        if let Err(e) = async_fs::File::create(&table_path).await {
-            return Err(DatabaseError::IoError(e));
-        }
-        Ok(())
     }
 
-    pub async fn drop_table(&mut self, name: &str) -> Result<(), DatabaseError> {
-        if self.tables.remove(name).is_none() {
-            return Err(DatabaseError::TableDoesNotExist(name.to_string()));
-        }
-        let table_path = self.path.join(format!("{}.json", name));
-        if let Err(e) = async_fs::remove_file(&table_path).await {
-            return Err(DatabaseError::IoError(e));
-        }
-        Ok(())
-    }
-
-    pub async fn load_table(&mut self, name: &str) -> Result<(), DatabaseError> {
-        let table_path = self.path.join(format!("{}.json", name));
-        let mut table = Table::new(name);
-        table.load(&table_path).await?;
-        self.tables.insert(name.to_string(), table);
-        Ok(())
-    }
-
-    pub async fn insert_into(&mut self, table_name: &str, data: impl Serialize) -> Result<(), DatabaseError> {
-        if let Some(table) = self.tables.get_mut(table_name) {
-            table.insert(data).await?;
-            table.save(&self.path.join(format!("{}.json", table_name))).await?;
-            let item_id = Uuid::new_v4().to_string(); // Получаем ID элемента
-            {
-                // Записываем в кэш
-                let mut cache = self.cache.write().await;
-                if let Some(item) = table.items.get(&item_id) {
-                    cache.insert(item_id.clone(), item.clone());
+    /// Update a field in a nested JSON object.
+    ///
+    /// # Parameters
+    /// - `parent_key`: The parent key of the nested field.
+    /// - `key`: The key of the field to update within the parent key.
+    /// - `value`: The new value for the nested field.
+    ///
+    /// # Returns
+    /// A result indicating success or failure.
+    pub fn update_nested_field(&mut self, parent_key: &str, key: &str, value: &Value) -> io::Result<()> {
+        if let Some(json_value) = &mut self.json_value {
+            if let Some(parent) = json_value.get_mut(parent_key) {
+                if let Some(obj) = parent.as_object_mut() {
+                    obj.insert(key.to_string(), value.clone());
+                    let updated_content = serde_json::to_string_pretty(json_value)?;
+                    let mut file = fs::File::create(&self.path)?;
+                    file.write_all(updated_content.as_bytes())?;
+                    Ok(())
                 } else {
-                    // Обработка случая, когда элемент не найден
-                    error!("Item with ID {} not found in table items.", item_id);
+                    Err(io::Error::new(io::ErrorKind::InvalidData, "Parent key is not an object"))
                 }
+            } else {
+                Err(io::Error::new(io::ErrorKind::NotFound, "Parent key not found"))
             }
-            Ok(())
         } else {
-            Err(DatabaseError::TableDoesNotExist(format!("Table {} does not exist", table_name)))
+            Err(io::Error::new(io::ErrorKind::InvalidData, "Document does not contain valid JSON"))
         }
-    }
-    pub async fn get_all(&self, table_name: &str) -> Result<Vec<GenericItem>, DatabaseError> {
-
-        if let Some(table) = self.tables.get(table_name) {
-
-            Ok(table.items.values().cloned().collect()) // Clone values and return as Vec
-
-        } else {
-
-            Err(DatabaseError::TableDoesNotExist(format!("Table {} does not exist", table_name)))
-
-        }
-
-    }
-
-    pub async fn delete_from(&mut self, table_name: &str, id: &str) -> Result<(), DatabaseError> {
-        if let Some(table) = self.tables.get_mut(table_name) {
-            table.delete(id).await?;
-            table.save(&self.path.join(format!("{}.json", table_name))).await?;
-            {
-                // Удаляем из кэша
-                let mut cache = self.cache.write().await;
-                cache.remove(id);
-            }
-            Ok(())
-        } else {
-            Err(DatabaseError::TableDoesNotExist(format!("Table {} does not exist", table_name)))
-        }
-    }
-
-    pub async fn find_in(&self, table_name: &str, id: &str) -> Result<Option<GenericItem>, DatabaseError> {
-        {
-            // Попробуем найти в кэше
-            let cache = self.cache.read().await;
-            if let Some(item) = cache.get(id) {
-                return Ok(Some(item.clone())); // Клонируем элемент перед возвратом
-            }
-        }
-
-        if let Some(table) = self.tables.get(table_name) {
-            Ok(table.find_by_id(id).await.cloned()) // Клонируем элемент из таблицы перед возвращением
-        } else {
-            Err(DatabaseError::TableDoesNotExist(format!("Table {} does not exist", table_name)))
-        }
-    }
-    pub async fn load_all_tables(&mut self) -> Result<(), DatabaseError> {
-        let mut entries = async_fs::read_dir(&self.path)
-        .await
-        .map_err(DatabaseError::IoError)?;
-
-        while let Some(entry) = entries.next_entry().await.map_err(DatabaseError::IoError)? {
-            let path = entry.path();
-
-            if path.extension().and_then(std::ffi::OsStr::to_str) == Some("json") {
-                let table_name = path
-                .file_stem()
-                .and_then(std::ffi::OsStr::to_str)
-                .ok_or_else(|| DatabaseError::IoError(io::Error::new(ErrorKind::Other, "Invalid file name")))?;
-
-                let mut table = Table::new(table_name);
-                table.load(&path).await?;
-                self.tables.insert(table_name.to_string(), table);
-            }
-        }
-
-        Ok(())
-    }
-
-
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use tokio::runtime::Runtime;
-
-    #[test]
-    fn test_create_table() {
-        let rt = Runtime::new().unwrap();
-        rt.block_on(async {
-            let mut db = Database::new("test_database");
-            db.create_table("test_table").await.unwrap();
-            assert!(db.tables.contains_key("test_table"));
-        });
-    }
-
-    #[test]
-    fn test_insert_item() {
-        let rt = Runtime::new().unwrap();
-        rt.block_on(async {
-            let mut db = Database::new("test_database");
-            db.create_table("test_table").await.unwrap();
-            let item_id = "item1".to_string();
-            db.insert_into("test_table", "Item 1").await.unwrap();
-            assert!(db.tables["test_table"].items.contains_key(&item_id));
-        });
-    }
-
-    #[test]
-    fn test_delete_item() {
-        let rt = Runtime::new().unwrap();
-        rt.block_on(async {
-            let mut db = Database::new("test_database");
-            db.create_table("test_table").await.unwrap();
-            let item_id = "item1".to_string();
-            db.insert_into("test_table", "Item 1").await.unwrap();
-            db.delete_from("test_table", &item_id).await.unwrap();
-            let result = db.find_in("test_table", &item_id).await.unwrap();
-            assert!(result.is_none());
-        });
-    }
-
-    #[test]
-    fn test_find_nonexistent_item() {
-        let rt = Runtime::new().unwrap();
-        rt.block_on(async {
-            let mut db = Database::new("test_database");
-            db.create_table("test_table").await.unwrap();
-            let item_id = "nonexistent_item".to_string();
-            let result = db.find_in("test_table", &item_id).await.unwrap();
-            assert!(result.is_none());
-        });
     }
 }
 
-/*
-#[tokio::main]
-async fn main() -> Result<(), DatabaseError> {
-    print_ascii();
-    let log_file = File::create("app.log").map_err(DatabaseError::IoError)?;
+// Functions for handling file operations and collections
+fn get_documents_in_collection(path: &Path) -> Vec<Document> {
+    let entries = fs::read_dir(path).unwrap();
+    let mut documents: Vec<Document> = vec![];
 
-    WriteLogger::init(LevelFilter::Info, Config::default(), log_file).map_err(|e| {
-        DatabaseError::IoError(std::io::Error::new(ErrorKind::Other, e.to_string()))
-    })?;
+    for entry in entries {
+        let entry = entry.unwrap();
+        let entry_path = entry.path();
+        if entry_path.is_file() {
+            let name = entry_path.file_name().unwrap().to_string_lossy().into_owned();
+            let data = read_file_data(&entry_path).unwrap_or_default();
+            let json_value = parse_json_data(&data).ok();
+            let document = Document {
+                name,
+                path: entry_path.clone(),
+                json_value,
+            };
+            documents.push(document);
+        }
+    }
+    documents
+}
 
-    let mut db = Database::new("database");
+fn read_file_data(path: &Path) -> io::Result<String> {
+    let mut file = fs::File::open(path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}
 
-    db.create_table("people").await?;
-    db.insert_into("people", "Alice").await?;
-    db.insert_into("people", "Bob").await?;
+fn parse_json_data(data: &str) -> JsonResult<Value> {
+    serde_json::from_str(data)
+}
 
-    // Получаем id элемента, если они существуют
-    let item_id = {
-        let table = db.tables.get("people").unwrap(); // Здесь мы уверены, что таблица существует
-        if let Some(first_id) = table.items.keys().next() {
-            first_id.clone() // Если есть, берем первый id
+fn get_exists_collections(path: &Path) -> Vec<Collection> {
+    let mut collections: Vec<Collection> = vec![];
+
+    if path.exists() && path.is_dir() {
+        let entries = fs::read_dir(path).unwrap();
+
+        for entry in entries {
+            let entry = entry.unwrap();
+            let entry_path = entry.path();
+
+            if entry_path.is_dir() {
+                let documents = get_documents_in_collection(&entry_path);
+                let collection_name = entry_path.file_name().unwrap().to_string_lossy().into_owned();
+                let collection = Collection {
+                    name: collection_name,
+                    documents,
+                };
+                collections.push(collection);
+            }
+        }
+    } else {
+        error!("The specified path does not exist or is not a directory: {:?}", path);
+    }
+
+    collections
+}
+
+/// The main entry point for the application.
+fn main() -> std::io::Result<()> {
+    // Get the home directory
+    let home_dir = env::home_dir().expect("Failed to get home directory");
+    let base_path = home_dir.join(ROOT_DIR);
+    let adb_data_path = base_path.join(ADB_DATA_DIR);
+    let adb_logs_path = base_path.join(ADB_LOGS_DIR);
+
+    // Ensure the base and log directories exist
+    fs::create_dir_all(&adb_data_path).expect("Failed to create ADB_Data directory");
+    fs::create_dir_all(&adb_logs_path).expect("Failed to create ADB_Logs directory");
+
+    // Define the data path for JSON documents
+    let root_path = adb_data_path.join(JSON_ENGINE_DIR);
+
+    // Ensure the JSON engine directory exists
+    fs::create_dir_all(&root_path).expect("Failed to create json_engine directory");
+
+    // Generate a unique log filename using timestamp
+    let timestamp = Local::now().format("%Y-%m-%d_%H-%M-%S").to_string();
+    let log_file_path = format!("{}/{}.adb.log", adb_logs_path.display(), timestamp);
+
+    // Set up logging configuration
+    let log_config = ConfigBuilder::new().build();
+
+    CombinedLogger::init(
+        vec![
+            TermLogger::new(LevelFilter::Trace, log_config.clone(), TerminalMode::Mixed, ColorChoice::Auto),
+                         WriteLogger::new(LevelFilter::Trace, log_config.clone(), fs::File::create(log_file_path).unwrap()),
+        ]
+    ).unwrap();
+
+    trace!("Starting Collection Manager...");
+
+    let mut manager = CollectionManager::new(&root_path);
+
+    // Create a new collection
+    let collection_name = "collection1"; // Example collection name
+    if let Some(_) = manager.add_collection(collection_name) {
+        trace!("Created collection: {}", collection_name);
+    }
+
+    // Create a new document within the created collection
+    let document_name = "document5.json"; // Example document name
+    let document_content = json!({
+        "code": 200,
+        "success": true,
+        "payload": {
+            "features": [
+                "serde",
+                "json"
+            ],
+            "homepage": null
+        }
+    });
+
+    // Convert JSON Value to String
+    let document_content_str = serde_json::to_string(&document_content).expect("Failed to convert JSON to string");
+
+    if let Some(collection) = manager.get_collection_mut(collection_name) {
+        if let Err(e) = collection.add_document(document_name, &document_content_str) {
+            error!("Failed to add document: {}", e);
         } else {
-            adbprint!("No items found in the table."); // Если таблица пуста
-            return Ok(()); // Завершаем выполнение
-        }
-    };
-
-    match db.find_in("people", &item_id).await {
-        Ok(Some(item)) => {
-            adbprint!("Found item: {:#?}", item);
-        }
-        Ok(None) => {
-            adbprint!("Item with ID {} not found.", item_id);
-        }
-        Err(e) => {
-            adbprint!("Error finding item: {}", e);
+            trace!("Created document: {} in collection: {}", document_name, collection_name);
         }
     }
 
-    // Удаление элемента
-    db.delete_from("people", &item_id).await?;
-    adbprint!("Deleted item with ID: {}", item_id);
+    // Example of accessing the document
+    if let Some(doc) = manager.get_document(collection_name, document_name) {
+        println!("Found document: {:?}", doc);
+        trace!("Successfully found document: {}", doc.name);
+    } else {
+        println!("Document '{}' not found in collection '{}'", document_name, collection_name);
+        error!("Document '{}' not found in collection '{}'", document_name, collection_name);
+    }
+
+    // Example of updating 'homepage' in the 'payload' field
+    if let Some(doc) = manager.get_document_mut(collection_name, document_name) {
+        // New value for 'payload.homepage'
+        let new_homepage_value = json!("https://new-homepage-url.com");
+
+        if let Err(e) = doc.update_nested_field("payload", "homepage", &new_homepage_value) {
+            error!("Failed to update 'homepage' in 'payload': {}", e);
+        } else {
+            trace!("Updated 'homepage' in document: {}", document_name);
+        }
+    }
 
     Ok(())
 }
-*/
-#[tokio::main]
-async fn main() -> Result<(), DatabaseError> {
-    // Your existing database initialization code here...
-    print_ascii();
-    let now: DateTime<Utc> = Utc::now();
-    let log_file = File::create(now.format("%Y-%m-%d %H:%M:%S").to_string()).map_err(DatabaseError::IoError)?;
 
-
-    WriteLogger::init(LevelFilter::Trace, Config::default(), log_file).map_err(|e| {
-        DatabaseError::IoError(std::io::Error::new(ErrorKind::Other, e.to_string()))
-    })?;
-
-    let db = Arc::new(RwLock::new(Database::new("database"))); // Wrap in Arc<RwLock<Database>>
-    {
-        let mut db_write = db.write().await;
-        db_write.load_all_tables().await?; // Load existing tables
+// Helper method to get a mutable reference to a document
+impl CollectionManager {
+    pub fn get_document_mut(&mut self, collection_name: &str, document_name: &str) -> Option<&mut Document> {
+        self.get_collection_mut(collection_name)?.documents.iter_mut().find(|doc| doc.name == document_name)
     }
-    let addr = "[::1]:50051".parse().unwrap();
-    let database_service = MyDatabaseService { db }; // Use the Arc<RwLock>
-
-    info!("Server is starting on {:?}", addr);
-    println!("Server is starting on {:?}", addr);
-    Server::builder()
-    .add_service(DatabaseServiceServer::new(database_service))
-    .serve(addr)
-    .await?;
-
-
-    Ok(())
 }

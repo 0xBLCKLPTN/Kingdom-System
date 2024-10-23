@@ -51,6 +51,18 @@ const Dashboard: React.FC = () => {
     router.push('/calls'); // Перенаправление на страницу звонков
   };
 
+  const handlePolygonNavigation = () => {
+    router.push('/polygon')
+  }
+
+  const handleExitButton = () => {
+    router.push('/auth')
+  }
+
+  const handleGrafanaButton = () => {
+    router.push('/tech/grafana')
+  }
+
   useEffect(() => {
     const fetchReleases = async () => {
       try {
@@ -94,7 +106,7 @@ const Dashboard: React.FC = () => {
             <UserGroupIcon className="w-6 h-6" />
             <span className={styles.itemText}>Друзья</span>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem} onClick={handleCallsNavigation}> {/* Обработчик для перехода на страницу звонков */}
+          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem}>
             <PhoneIcon className="w-6 h-6" />
             <span className={styles.itemText}>Звонки</span>
           </motion.div>
@@ -120,13 +132,12 @@ const Dashboard: React.FC = () => {
                         <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
                       }
                     </div>
-                    <span className="ml-2">{friend.name}</span>
                   </li>
                 ))}
               </ul>
             </motion.div>
           )}
-          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem}>
+          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem} onClick={handleCallsNavigation}>
             <ServerIcon className="w-6 h-6" />
             <span className={styles.itemText}>Серверы</span>
           </motion.div>
@@ -142,12 +153,24 @@ const Dashboard: React.FC = () => {
             <ExclamationTriangleIcon className="w-6 h-6" />
             <span className={styles.itemText}>Сообщить о баге</span>
           </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem} onClick={handlePolygonNavigation}>
+            <ExclamationTriangleIcon className="w-6 h-6" />
+            <span className={styles.itemText}>Polygon</span>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem} onClick={handlePolygonNavigation}>
+            <ExclamationTriangleIcon className="w-6 h-6" />
+            <span className={styles.itemText}>Schedule</span>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} className={styles.navItem} onClick={handleGrafanaButton}>
+            <ExclamationTriangleIcon className="w-6 h-6" />
+            <span className={styles.itemText}>Grafana</span>
+          </motion.div>
         </nav>
         <div className={styles.userInfo}>
           <Image src={user.avatar} alt="Аватар" width={40} height={40} className="rounded-full" />
           <div className={styles.userDetails}>
             <p className={isDarkMode ? 'text-white' : 'text-black'}>{username }</p>
-            <button className={`${styles.userButton} ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <button className={`${styles.userButton} ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} onClick={handleExitButton}>
               <XMarkIcon className="w-4 h-4 inline-block mr-1" /> Выйти
             </button>
             <button className={`${styles.userButton} ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>

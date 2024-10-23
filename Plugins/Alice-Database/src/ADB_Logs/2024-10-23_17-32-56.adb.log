@@ -1,0 +1,4 @@
+12:32:56 [TRACE] (1) Alice_Database: [src/main.rs:164] Starting Collection Manager...
+12:32:56 [TRACE] (1) Alice_Database: [src/main.rs:171] Created collection: collection1
+12:32:56 [ERROR] Failed to add document: No such file or directory (os error 2)
+12:32:56 [ERROR] Document 'document4.json' not found in collection 'collection1'

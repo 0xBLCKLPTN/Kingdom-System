@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "box-storage"
+version = "0.1.0"
+description = ""
+authors = ["Daniil Ermolaev <blcklptn@icloud.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.2"
+uvicorn = "^0.32.0"
+boto3 = "^1.35.45"
+python-multipart = "^0.0.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
