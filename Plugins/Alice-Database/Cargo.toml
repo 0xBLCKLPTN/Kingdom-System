@@ -2,6 +2,9 @@
 name = "Alice-Database_DBMS"
 version = "0.1.0"
 edition = "2021"
+include = ["**/*.rs", "Cargo.toml"]
+license = "MIT"
+description = "The Alice-Database is a comprehensive data management solution designed to integrate seamlessly with the Kingdom System. This plugin provides robust functionality for creating, updating, and deleting collections and documents, ensuring efficient and reliable data storage and retrieva"
 
 [dependencies]
 chrono = "0.4.38"
