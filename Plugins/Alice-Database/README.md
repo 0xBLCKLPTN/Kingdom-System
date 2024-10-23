@@ -30,7 +30,7 @@ To set up Alice DBMS, ensure you have Rust and Cargo installed. You can then add
 
 ```toml
 [dependencies]
-alice_dbms = "0.1"  # Replace with the actual version
+Alice-Database_DBMS = "=0.1.0"
 ```
 
 Then, run:
