@@ -11,6 +11,7 @@ message Instance {
 message CreateInstanceRequest {
     string engine_type = 1;
     string root_path = 2;
+    Token token = 3;
 }
 
 message CreateInstanceResponse {
@@ -19,6 +20,7 @@ message CreateInstanceResponse {
 
 message GetInstanceRequest {
     string instance_name = 1;
+    Token token = 2;
 }
 
 message GetInstanceResponse {
@@ -27,14 +29,38 @@ message GetInstanceResponse {
 
 message GetAllInstancesRequest {
     string message = 1;
+    Token token = 2;
 }
 
 message GetAllInstancesResponse {
     repeated Instance instances = 1;
 }
 
+message SignInRequest {
+    string secret_key = 1;
+    string app_name = 2;
+}
+
+message SingInResponse {
+    string access = 1;
+}
+
+message SignUpRequest {
+    string app_name = 1;
+}
+
+message SignUpResponse {
+    string secret_key = 1;
+}
+
+message Token {
+    string secret_key = 1;
+}
+
 service InstanceService {
     rpc CreateInstance(CreateInstanceRequest) returns (CreateInstanceResponse);
     rpc GetInstance(GetInstanceRequest) returns (GetInstanceResponse);
     rpc GetAllInstances(GetAllInstancesRequest) returns (GetAllInstancesResponse);
+    //rpc SignIn(SignInRequest) returns (SingInResponse);
+    rpc SignUp(SignUpRequest) returns (SignUpResponse);
 }

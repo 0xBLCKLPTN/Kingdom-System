@@ -106,6 +106,7 @@ impl JSONEngine {
         JSONEngine { collections }
     }
 
+
     /// Retrieve a mutable reference to a collection by its name.
     ///
     /// # Parameters
