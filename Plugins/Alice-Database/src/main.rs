@@ -73,7 +73,7 @@ fn print_ascii() {
 
 
 
-/* Usage example via InstanceManager;
+ Usage example via InstanceManager;
 fn main() {
     print_ascii();
     let root_path = match prepare() {
@@ -88,7 +88,7 @@ fn main() {
     println!("{:#?}", im);
     
 }
-
+/*
 /// The main entry point for the application.
 fn main() -> std::io::Result<()> {
     print_ascii();
