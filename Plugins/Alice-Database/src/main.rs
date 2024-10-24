@@ -24,8 +24,15 @@ use std::sync::{Arc, Mutex};
 pub mod instance_g {
     tonic::include_proto!("instance");
 }
-pub use instance_g::{CreateInstanceRequest, CreateInstanceResponse,
-    GetInstanceRequest, GetInstanceResponse, GetAllInstancesRequest, GetAllInstancesResponse};
+pub use instance_g::{
+    CreateInstanceRequest, CreateInstanceResponse,
+    GetInstanceRequest, GetInstanceResponse,
+    GetAllInstancesRequest, GetAllInstancesResponse,
+    //SignInRequest, SignInResponse,
+    SignUpRequest, SignUpResponse,
+    Token,
+
+};
 
 use crate::instance_g::instance_service_server::InstanceServiceServer;
 use crate::instance_g::instance_service_server::InstanceService;
@@ -102,10 +109,9 @@ impl InstanceService for MyInstanceManager {
         request: Request<CreateInstanceRequest>,
     ) -> Result<Response<CreateInstanceResponse>, Status> {
         let inner = request.into_inner();
-        let engine_type = inner.engine_type;
-        let root_path = PathBuf::from(inner.root_path); // assuming root_path is a string path
+        let engine_type = inner.engine_type; // assuming root_path is a string path
         let mut manager = self.instances.lock().unwrap();
-        let id = manager.create_instance(&engine_type,&root_path);
+        let id = manager.create_instance(&engine_type);
         
         let response = CreateInstanceResponse { instance: id };
         Ok(Response::new(response))
@@ -142,20 +148,43 @@ impl InstanceService for MyInstanceManager {
         Ok(Response::new(response))
 
     }
+
+    async fn sign_up(
+        &self,
+        request: Request<SignUpRequest>,
+    ) -> Result<Response<SignUpResponse>, Status> {
+        let inner = request.into_inner();
+        let mut manager = self.instances.lock().unwrap();
+        let mut key: String = String::new();
+        if !manager.authenticated_apps.contains_key(&inner.app_name) {
+            key = manager.sign_up(inner.app_name);
+        } else {
+            key = "whoops...".to_string();
+        }
+        let response = SignUpResponse { secret_key: key };
+        
+        manager.get_all_apps();
+        Ok(Response::new(response))
+    }
 }
 
 
 // Main function to start the gRPC server
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    print_ascii();
+    let root_path = match prepare() {
+        Ok(k) => k,
+        _ => panic!("Errors in prepare function.")
+    };
     let instance_manager = MyInstanceManager {
-        instances: Arc::new(Mutex::new(InstanceManager::new())),
+        instances: Arc::new(Mutex::new(InstanceManager::new(&root_path))),
     };
 
     println!("Starting gRPC server...");
     Server::builder()
         .add_service(InstanceServiceServer::new(instance_manager))
-        .serve("[::1]:50051".parse()?)
+        .serve("[::1]:50052".parse()?)
         .await?;
 
     Ok(())

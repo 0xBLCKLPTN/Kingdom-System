@@ -2,6 +2,10 @@ use crate::Engines;
 use uuid::Uuid;
 use std::path::PathBuf;
 use crate::JSONEngine;
+use std::collections::HashMap;
+use ring::{rand::{SecureRandom, SystemRandom}, hmac};
+use rand::rngs::OsRng;
+
 
 #[derive(Debug, Clone)]
 pub struct Instance {
@@ -12,22 +16,26 @@ pub struct Instance {
 #[derive(Debug, Clone, Default)]
 pub struct InstanceManager {
     pub name: String,
-    pub instances: Vec<Instance>
+    pub instances: Vec<Instance>,
+    pub root_path: PathBuf,
+    pub authenticated_apps: HashMap<String, String>,
 }
 
 
 impl InstanceManager {
-    pub fn new() -> Self {
+    pub fn new(root_path: &PathBuf) -> Self {
         let name = Uuid::new_v4().to_string();
+
         let mut instances: Vec<Instance> = vec![];
-        Self {name, instances}
+        let mut authenticated_apps: HashMap<String, String> = HashMap::new();
+        Self {name, instances, root_path: root_path.to_owned(), authenticated_apps}
     }
 
-    pub fn create_instance(&mut self, engine_type: &str, root_path: &PathBuf) -> String {
+    pub fn create_instance(&mut self, engine_type: &str) -> String {
         let instance_name: String = Uuid::new_v4().to_string();
 
         let mut engine = match engine_type {
-            "json_engine" => Engines::JSONEngine(JSONEngine::new(&root_path)),
+            "json_engine" => Engines::JSONEngine(JSONEngine::new(&self.root_path)),
             _ => panic!("Engine not found"),
         };
         let mut instance = Instance {engine, name: instance_name.clone()};
@@ -48,5 +56,15 @@ impl InstanceManager {
             }
         }
         None
+    }
+
+    pub fn sign_up(&mut self, app_name: String) -> String {
+        let key = Uuid::new_v4().to_string();
+        &self.authenticated_apps.insert(app_name, key.clone());
+        return key;
+    }
+
+    pub fn get_all_apps(&self) {
+        println!("{:#?}", self.authenticated_apps);
     }
 }
