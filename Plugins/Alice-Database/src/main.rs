@@ -73,7 +73,7 @@ fn print_ascii() {
 
 
 
- Usage example via InstanceManager;
+
 fn main() {
     print_ascii();
     let root_path = match prepare() {
