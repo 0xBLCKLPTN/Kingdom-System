@@ -19,4 +19,4 @@ simplelog = "0.12.2"
 
 [[test]]
 name = "tests"
-path = "src/tests.rs"
+path = "src/main.rs"
