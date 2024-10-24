@@ -13,6 +13,23 @@ pub mod engines;
 use engines::Engines;
 pub mod instance;
 use instance::*;
+
+use crate::instance::InstanceManager;
+
+
+use tonic::{transport::Server, Request, Response, Status};
+use uuid::Uuid;
+use std::sync::{Arc, Mutex};
+
+pub mod instance_g {
+    tonic::include_proto!("instance");
+}
+pub use instance_g::{CreateInstanceRequest, CreateInstanceResponse,
+    GetInstanceRequest, GetInstanceResponse, GetAllInstancesRequest, GetAllInstancesResponse};
+
+use crate::instance_g::instance_service_server::InstanceServiceServer;
+use crate::instance_g::instance_service_server::InstanceService;
+
 // Define constants for the root path and log path
 const ROOT_DIR: &str = "Alice-Database-Data";
 const ADB_DATA_DIR: &str = "ADB_Data";
@@ -71,9 +88,81 @@ fn print_ascii() {
     ")
 }
 
+// Define the gRPC service
+#[derive(Debug, Default)]
+pub struct MyInstanceManager {
+    pub instances: Arc<Mutex<InstanceManager>>,
+}
+
+#[tonic::async_trait]
+impl InstanceService for MyInstanceManager {
+    
+    async fn create_instance(
+        &self,
+        request: Request<CreateInstanceRequest>,
+    ) -> Result<Response<CreateInstanceResponse>, Status> {
+        let inner = request.into_inner();
+        let engine_type = inner.engine_type;
+        let root_path = PathBuf::from(inner.root_path); // assuming root_path is a string path
+        let mut manager = self.instances.lock().unwrap();
+        let id = manager.create_instance(&engine_type,&root_path);
+        
+        let response = CreateInstanceResponse { instance: id };
+        Ok(Response::new(response))
+    }
+
+    /// Get an existing instance by name
+
+    async fn get_instance(
+        &self,
+        request: Request<GetInstanceRequest>,
+    ) -> Result<Response<GetInstanceResponse>, Status> {
+        let instance_name = request.into_inner().instance_name;
+        // Lock the mutex to safely access the manager
+        let manager = self.instances.lock().unwrap();
+        // Retrieve the instance by name
+        if let Some(instance) = manager.get_instance(&instance_name) {
+            return Ok(Response::new(GetInstanceResponse {
+                instance: instance.name.clone(),  // Clone the entire instance
+            }));
+        }
+        Err(Status::not_found("Instance not found"))
+    }
+
+    async fn get_all_instances(
+        &self,
+        request: Request<GetAllInstancesRequest>,
+    ) -> Result<Response<GetAllInstancesResponse>, Status> {
+        let manager = self.instances.lock().unwrap();
+        let mut re_instances: Vec<instance_g::Instance> = vec![];
+        for i in &manager.instances {
+            re_instances.push(instance_g::Instance {name: i.name.clone(), engine: "unknown".into()} );
+        }
+        let response = GetAllInstancesResponse { instances: re_instances };
+        Ok(Response::new(response))
+
+    }
+}
 
 
+// Main function to start the gRPC server
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let instance_manager = MyInstanceManager {
+        instances: Arc::new(Mutex::new(InstanceManager::new())),
+    };
 
+    println!("Starting gRPC server...");
+    Server::builder()
+        .add_service(InstanceServiceServer::new(instance_manager))
+        .serve("[::1]:50051".parse()?)
+        .await?;
+
+    Ok(())
+}
+
+
+/*
 fn main() {
     print_ascii();
     let root_path = match prepare() {
@@ -88,7 +177,7 @@ fn main() {
     println!("{:#?}", im);
     
 }
-/*
+
 /// The main entry point for the application.
 fn main() -> std::io::Result<()> {
     print_ascii();

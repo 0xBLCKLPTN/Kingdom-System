@@ -9,14 +9,14 @@ pub struct Instance {
     pub engine: Engines,
 }
 
-#[derive(Debug, Clone)]
-pub struct InstanceManger {
+#[derive(Debug, Clone, Default)]
+pub struct InstanceManager {
     pub name: String,
     pub instances: Vec<Instance>
 }
 
 
-impl InstanceManger {
+impl InstanceManager {
     pub fn new() -> Self {
         let name = Uuid::new_v4().to_string();
         let mut instances: Vec<Instance> = vec![];
@@ -33,6 +33,9 @@ impl InstanceManger {
         let mut instance = Instance {engine, name: instance_name.clone()};
         self.instances.push(instance);
         instance_name
+    }
+    pub fn get_instance(&self, instance_name: &str) -> Option<&Instance> {
+        self.instances.iter().find(|i| i.name == instance_name)
     }
     // Method to mutate the engine of an existing instance
 
