@@ -6,46 +6,6 @@ on:
       - main
 
 jobs:
-  update_version:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Get commit count and last commit hash
-        id: get_info
-        run: |
-          COMMIT_COUNT=$(git rev-list --count HEAD)
-          
-          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_ENV
-          echo "last_commit_hash=$LAST_COMMIT_HASH" >> $GITHUB_ENV
-
-      - name: Create VERSION file
-        run: |
-          # Формируем версию
-
-          
-          echo "$VERSION" > VERSION
-
-      - name: Commit and push changes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add VERSION
-          git commit -m "Update VERSION file"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-name: Update Version
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
   update-version:
     runs-on: ubuntu-latest
 
