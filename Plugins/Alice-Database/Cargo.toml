@@ -1,6 +1,6 @@
 [package]
 name = "Alice-Database_DBMS"
-version = "1.0.0"
+version = "1.2.0"
 edition = "2021"
 include = ["**/*.rs", "Cargo.toml"]
 license = "MIT"
@@ -13,10 +13,18 @@ homepage = "https://github.com/0xBLCKLPTN/Kingdom-System"
 chrono = "0.4.38"
 env_logger = "0.11.5"
 log = "0.4.22"
+prost = "0.13.3"
 serde = { version = "1.0.213", features = ["derive"] }
 serde_json = "1.0.132"
 simplelog = "0.12.2"
+tokio = { version = "1.41.0", features = ["full"] }
+tonic = "0.12.3"
+uuid = { version = "1.11.0", features = ["v4"] }
 
 [[test]]
 name = "tests"
-path = "src/tests.rs"
+path = "src/main.rs"
+
+
+[build-dependencies]
+tonic-build = "0.12.3"
