@@ -17,7 +17,7 @@ const JSON_ENGINE_DIR: &str = "json_engine";
 /// A struct representing a document in the database.
 ///
 /// A `Document` contains its name, file path, and its content stored as a JSON `Value`.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Document {
     pub name: String,
     pub path: PathBuf,
@@ -27,7 +27,7 @@ pub struct Document {
 /// A struct representing a collection of documents.
 ///
 /// A `Collection` holds a name and a list of associated `Document`s.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Collection {
     pub name: String,
     pub documents: Vec<Document>,
@@ -88,6 +88,7 @@ impl Collection {
 }
 
 /// A struct to manage multiple collections of documents.
+#[derive(Debug, Clone)]
 pub struct JSONEngine {
     collections: Vec<Collection>,
 }
@@ -100,7 +101,7 @@ impl JSONEngine {
     ///
     /// # Returns
     /// A new instance of `JSONEngine`.
-    pub fn new(root: &Path) -> Self {
+    pub fn new(root: &Path, ) -> Self {
         let collections = get_exists_collections(root);
         JSONEngine { collections }
     }

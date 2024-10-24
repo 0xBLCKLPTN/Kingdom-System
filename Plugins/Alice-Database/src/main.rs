@@ -9,7 +9,10 @@ use std::env; // Import this for getting the home directory
 
 pub mod json_engine;
 use json_engine::*;
-
+pub mod engines;
+use engines::Engines;
+pub mod instance;
+use instance::*;
 // Define constants for the root path and log path
 const ROOT_DIR: &str = "Alice-Database-Data";
 const ADB_DATA_DIR: &str = "ADB_Data";
@@ -69,13 +72,27 @@ fn print_ascii() {
 }
 
 
-/// The main entry point for the application.
-fn main() -> std::io::Result<()> {
+
+/* Usage example via InstanceManager;
+fn main() {
     print_ascii();
     let root_path = match prepare() {
         Ok(k) => k,
         _ => panic!("Errors in prepare function."),
     };
+
+    let mut im = InstanceManger::new();
+    let instance_name = im.create_instance("json_engine", &root_path);
+    //println!("{:#?}", im);
+    let mut engine = im.get_mutable_engine(instance_name.as_str());
+    println!("{:#?}", im);
+    
+}
+
+/// The main entry point for the application.
+fn main() -> std::io::Result<()> {
+    print_ascii();
+    
     
     trace!("Starting Collection Manager...");
 
@@ -135,6 +152,7 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
+*/
 
 #[cfg(test)]
 mod tests {
