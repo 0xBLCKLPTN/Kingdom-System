@@ -34,7 +34,17 @@ const ADB_DATA_DIR: &str = "ADB_Data";
 const JSON_ENGINE_DIR: &str = "json_engine";
 const ADB_LOGS_DIR: &str = "ADB_Logs";
 
+pub fn get_root_path() -> PathBuf {
+    let root_path = match prepare() {
+        Ok(k) => k,
+        _ => panic!("Errors while preparing..."),
+    };
+    return root_path;
+}
+
+
 pub fn prepare() -> std::io::Result<PathBuf> {
+    print_ascii();
     // Get the home directory
     let home_dir = env::home_dir().expect("Failed to get home directory");
     let base_path = home_dir.join(ROOT_DIR);

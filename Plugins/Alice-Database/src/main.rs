@@ -38,21 +38,19 @@ pub mod engines;
 pub mod grpc_server;
 pub mod instance;
 pub mod utils;
+pub mod command_executor;
 
 use json_engine::*;
 use engines::*;
 use grpc_server::*;
 use instance::*;
 use utils::*;
+use command_executor::*;
 
+/* gRPC 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    print_ascii();
-    
-    let root_path = match prepare() {
-        Ok(k) => k,
-        _ => panic!("Errors in prepare function."),
-    };
+    let root_path: PathBuf = get_root_path();
 
     let instance_manager = GRPCInstanceManager {
         instance_manager: Arc::new(Mutex::new(InstanceManager::new(&root_path))),
@@ -65,5 +63,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .serve("[::1]:50052".parse()?)
         .await?;
 
+    Ok(())
+}
+*/
+
+impl IMCommandExecutor for InstanceManager {}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let root_path: PathBuf = get_root_path();
+
+    let mut im = InstanceManager::new(&root_path);
+    match im.execute("CREATE INSTANCE instance_q;") {
+        Ok(_) => println!("Done!"),
+        Err(e) => println!("Something went wrong."),
+    }
+    println!("New command");
+    im.execute("GET ALL INSTANCES");
     Ok(())
 }

@@ -1,0 +1,19 @@
+alpha = { 'a'..'z' | 'A'..'Z' }
+digit = { '0'..'9' }
+ident = { !digit ~ (alpha | digit | "_")+ }
+
+item = { ident }
+items = { item ~ (( "," | "," ) ~ item)* }
+
+create_instance = { "CREATE INSTANCE " ~ ident ~ " ENGINE " ~ ident }
+get_instance = { "GET INSTANCE " ~ ident }
+get_instances = { "GET ALL INSTANCES" }
+delete_instance = { "DELETE INSTANCE " ~ ident }
+
+print_addbms = { "PRINTALLDDBMS" }
+
+sql_statement = {
+	create_instance | get_instance | get_instances | delete_instance
+}
+
+sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | (";" ~ sql_statement))* ~ ";"? }
