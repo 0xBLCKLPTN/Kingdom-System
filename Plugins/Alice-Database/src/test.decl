@@ -1,3 +1,6 @@
+
+# Create instance automatical.
+# This is comments. Instance Manager will ignore this lines.
 CREATE INSTANCE new_instance ENGINE json_engine;
 GET INSTANCES;
 PRINTALLDDBMS;

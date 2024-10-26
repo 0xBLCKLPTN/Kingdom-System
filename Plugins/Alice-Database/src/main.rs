@@ -56,7 +56,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_path: PathBuf = get_root_path();
     let mut im = InstanceManager::new(&root_path);
-    //let k = im.execute_decl_file(Path::new("./test.decl"));
-    cli(&mut im);
+    let k = im.execute_decl_file(Path::new("./test.decl"));
+    //cli(&mut im);
     Ok(())
 }
