@@ -55,10 +55,11 @@ impl InstanceService for GRPCInstanceManager
     async fn create_instance(
         &self, request: Request<CreateInstanceRequest>,
     ) -> Result<Response<CreateInstanceResponse>, Status> {
-
-        let engine_type = request.into_inner().engine_type;
+        let inner = request.into_inner();
+        let engine_type = inner.engine_type;
+        let name = inner.name;
         let mut im = self.instance_manager.lock().unwrap();
-        let id = im.create_instance(&engine_type).unwrap();
+        let id = im.create_instance(&engine_type, &name).unwrap();
 
         Ok(
             Response::new( CreateInstanceResponse { instance: id } )
