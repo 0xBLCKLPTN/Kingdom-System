@@ -39,6 +39,7 @@ pub mod grpc_server;
 pub mod instance;
 pub mod utils;
 pub mod command_executor;
+pub mod cli;
 
 use json_engine::*;
 use engines::*;
@@ -46,7 +47,7 @@ use grpc_server::*;
 use instance::*;
 use utils::*;
 use command_executor::*;
-
+use cli::cli;
 /* gRPC 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -67,18 +68,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 */
 
-impl IMCommandExecutor for InstanceManager {}
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_path: PathBuf = get_root_path();
 
     let mut im = InstanceManager::new(&root_path);
-    match im.execute("CREATE INSTANCE instance_q;") {
-        Ok(_) => println!("Done!"),
-        Err(e) => println!("Something went wrong."),
-    }
-    println!("New command");
-    im.execute("GET ALL INSTANCES");
+    //let k = im.execute_decl_file(Path::new("./test.decl"));
+    cli(&mut im);
     Ok(())
 }

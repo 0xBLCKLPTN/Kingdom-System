@@ -22,12 +22,23 @@ SOFTWARE. */
 
 use crate::Engines;
 use uuid::Uuid;
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
+use std::fs::File;
+use std::io::{self, BufRead};
 use crate::JSONEngine;
 use std::collections::HashMap;
 use ring::{rand::{SecureRandom, SystemRandom}, hmac};
 use rand::rngs::OsRng;
+use crate::IMPestParser;
+use pest_derive::Parser;
+use pest::Parser;
+use crate::Rule;
 
+macro_rules! adbprint {
+    ($($arg:tt)*) => {
+        println!("[ INSTANCE MANAGER ]=: {}", format!($($arg)*));
+    };
+}
 
 #[derive(Debug, Clone)]
 pub struct Instance {
@@ -53,16 +64,20 @@ impl InstanceManager {
         Self {name, instances, root_path: root_path.to_owned(), authenticated_apps}
     }
 
-    pub fn create_instance(&mut self, engine_type: &str) -> String {
+    pub fn create_instance(&mut self, engine_type: &str) -> Result<String, Box<dyn std::error::Error>> {
         let instance_name: String = Uuid::new_v4().to_string();
 
         let mut engine = match engine_type {
             "json_engine" => Engines::JSONEngine(JSONEngine::new(&self.root_path)),
-            _ => panic!("Engine not found"),
+            _ => {
+                println!("Engine not found.");
+                return Err(Box::new(std::io::Error::new(
+                            std::io::ErrorKind::InvalidInput, "Engine type not found")));
+            }
         };
         let mut instance = Instance {engine, name: instance_name.clone()};
         self.instances.push(instance);
-        instance_name
+        Ok(instance_name)
     }
     pub fn get_instance(&self, instance_name: &str) -> Option<&Instance> {
         self.instances.iter().find(|i| i.name == instance_name)
@@ -87,6 +102,68 @@ impl InstanceManager {
     }
 
     pub fn get_all_apps(&self) {
-        println!("{:#?}", self.authenticated_apps);
+        adbprint!("{:#?}", self.authenticated_apps);
+    }
+
+    pub fn execute_cmd(&mut self, command: &str) -> Result<(), Box<dyn std::error::Error>> {
+        match IMPestParser::parse(Rule::sql_statements, command) {
+            Ok(pairs) => {
+                for pair in pairs {
+                    for inner_pair in pair.into_inner() {
+                        match inner_pair.as_rule() {
+                            Rule::create_instance => {
+                                let inner = inner_pair.into_inner().as_str().split(" ENGINE ").collect::<Vec<_>>();
+                                let instance_id = &self.create_instance(&inner[1]);
+                                match instance_id {
+                                    Ok(message) => adbprint!("NEW INSTANCE ID: {}", message),
+                                    Err(e) => adbprint!("{:#?}",e)
+                                }
+                            },
+                            Rule::get_instance => {
+                                let inner = inner_pair.into_inner().as_str();
+                                adbprint!("{:#?}", inner);
+                            },
+                            Rule::get_instances => {
+                                adbprint!("{:#?}", self.instances);
+                            },
+                            Rule::print_addbms => {
+                                adbprint!("{:#?}", self);
+                            }
+                            _ => unreachable!("I don't know this command"),
+                        }
+                    }
+                }
+                Ok(())
+            }
+            Err(e) => {
+                adbprint!("Error parsing command: {}", e);
+                Err(Box::new(e))
+            }
+        }
+    }
+
+    pub fn wrapped_execute_cmd(&mut self, command: &str) -> Result<(), Box<dyn std::error::Error>> {
+        match &self.execute_cmd(command) {
+            Ok(_) => println!(""),
+            Err(e) => adbprint!("Error! {}", e), 
+        }
+        Ok(())
+    }
+
+    pub fn execute_decl_file<P>(&mut self, filename: P) -> Result<(), io::Error>
+    where
+        P: AsRef<Path> {
+            let file = File::open(filename)?;
+            let reader = io::BufReader::new(file);
+            let mut lines: Vec<String> = Vec::new();
+
+            for line in reader.lines() {
+                self.wrapped_execute_cmd(line?.replace("\n", "").as_str());
+            }
+            Ok(())
     }
 }
+
+
+
+

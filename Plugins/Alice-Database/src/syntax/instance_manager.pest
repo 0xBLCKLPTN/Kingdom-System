@@ -7,13 +7,13 @@ items = { item ~ (( "," | "," ) ~ item)* }
 
 create_instance = { "CREATE INSTANCE " ~ ident ~ " ENGINE " ~ ident }
 get_instance = { "GET INSTANCE " ~ ident }
-get_instances = { "GET ALL INSTANCES" }
+get_instances = { "GET INSTANCES" }
 delete_instance = { "DELETE INSTANCE " ~ ident }
 
 print_addbms = { "PRINTALLDDBMS" }
 
 sql_statement = {
-	create_instance | get_instance | get_instances | delete_instance
+	create_instance | get_instance | get_instances | delete_instance | print_addbms
 }
 
 sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | (";" ~ sql_statement))* ~ ";"? }
