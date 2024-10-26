@@ -122,6 +122,9 @@ impl InstanceManager {
                             Rule::print_addbms => {
                                 adbprint!("{:#?}", self);
                             },
+                            Rule::supported_engines => {
+                                adbprint!("LOGEngine (log_engine)\nJSONEngine (json_engine)");
+                            },
                             Rule::create_collection => {
                                 let inner = inner_pair.into_inner().as_str().split(" INSTANCE WITH NAME ").collect::<Vec<_>>();
                                 if let Some(engine) = self.get_mutable_engine(inner[0]) {
