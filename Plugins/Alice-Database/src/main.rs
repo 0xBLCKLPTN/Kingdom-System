@@ -1,4 +1,3 @@
-
 /*                          MIT License
 
 Copyright (c) 2024 Daniil Ermolaev
@@ -21,18 +20,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-use std::{ env, fs };
-use std::io::{ self, Read, Write };
-use std::path::{ PathBuf, Path };
-use std::sync::{ Arc, Mutex };
-
-use serde_json::{ json, Value, Result as JsonResult };
-
-use log::{ info, error, trace };
-use simplelog::*;
-
-use chrono::Local;
-
 pub mod json_engine;
 pub mod log_engine;
 pub mod engines;
@@ -42,14 +29,9 @@ pub mod utils;
 pub mod command_executor;
 pub mod cli;
 
-use json_engine::*;
-use log_engine::*;
-use engines::*;
-use grpc_server::*;
-use instance::*;
-use utils::*;
-use command_executor::*;
-use cli::cli;
+pub mod prelude; 
+use prelude::*;
+
 /* gRPC 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -73,7 +55,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_path: PathBuf = get_root_path();
-
     let mut im = InstanceManager::new(&root_path);
     //let k = im.execute_decl_file(Path::new("./test.decl"));
     cli(&mut im);

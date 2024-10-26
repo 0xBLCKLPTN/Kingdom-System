@@ -30,7 +30,7 @@ To set up Alice DBMS, ensure you have Rust and Cargo installed. You can then add
 
 ```toml
 [dependencies]
-Alice-Database_DBMS = "=0.1.0"
+AliceDBMS = "^1.2.7"
 ```
 
 Then, run:
@@ -44,22 +44,11 @@ cargo build
 Here's a brief example of how to use the Alice DBMS module:
 
 ```rust
+use AliceDBMS::prelude::*;
+
 fn main() -> std::io::Result<()> {
-    // Define the root path for data storage
-    let root_path = Path::new("path_to_your_database");
-    let mut manager = CollectionManager::new(&root_path);
-    
-    // Add a new collection
-    manager.add_collection("example_collection").unwrap();
-
-    // Prepare document content
-    let doc_content = json!({"key": "value"}).to_string();
-    
-    // Add a new document to the collection
-    manager.get_collection_mut("example_collection").unwrap()
-           .add_document("example_doc.json", &doc_content).unwrap();
-
-    println!("Document added successfully!");
+    let mut instance_manager = InstanceManager::new(&get_root_path());
+    cli(&mut instance_manager);
     Ok(())
 }
 ```

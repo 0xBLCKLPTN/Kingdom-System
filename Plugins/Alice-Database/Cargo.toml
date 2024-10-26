@@ -1,6 +1,6 @@
 [package]
-name = "Alice-Database_DBMS"
-version = "1.2.3"
+name = "AliceDBMS"
+version = "1.2.8"
 edition = "2021"
 include = ["**/*.rs", "Cargo.toml","proto/*.proto", "src/syntax/*.pest", "src/test.decl"]
 license = "MIT"

@@ -20,17 +20,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-use crate::Engines;
+use crate::engines::Engines;
 use uuid::Uuid;
 use std::path::{PathBuf, Path};
 use std::fs::File;
 use std::io::{self, BufRead};
-use crate::{JSONEngine, LOGEngine};
+
+use crate::json_engine::JSONEngine;
+use crate::log_engine::LOGEngine;
+
 use std::collections::HashMap;
-use crate::IMPestParser;
+use crate::command_executor::IMPestParser;
 use pest_derive::Parser;
 use pest::Parser;
-use crate::Rule;
+use crate::command_executor::Rule;
 
 macro_rules! adbprint {
     ($($arg:tt)*) => {
@@ -122,6 +125,9 @@ impl InstanceManager {
                             Rule::print_addbms => {
                                 adbprint!("{:#?}", self);
                             },
+                            Rule::supported_engines => {
+                                adbprint!("LOGEngine (log_engine)\nJSONEngine (json_engine)");
+                            },
                             Rule::create_collection => {
                                 let inner = inner_pair.into_inner().as_str().split(" INSTANCE WITH NAME ").collect::<Vec<_>>();
                                 if let Some(engine) = self.get_mutable_engine(inner[0]) {
@@ -183,16 +189,23 @@ impl InstanceManager {
         self.execute_cmd(command)
             .map_err(|e| { adbprint!("Error! {}", e); e })
     }
-
     pub fn execute_decl_file<P>(&mut self, filename: P) -> Result<(), io::Error>
     where
-        P: AsRef<Path>, 
+        P: AsRef<Path>,
     {
         let file = File::open(filename)?;
         let reader = io::BufReader::new(file);
 
         for line in reader.lines() {
-            if let Err(e) = self.wrapped_execute_cmd(&line?.replace("\n", "")) {
+            let line = line?;
+            
+            // Check if the line starts with '#', continue if it does
+            if line.trim_start().starts_with('#') {
+                continue; // Skip this line
+            }
+
+            // Execute the command after removing newline characters
+            if let Err(e) = self.wrapped_execute_cmd(&line.replace("\n", "")) {
                 adbprint!("Failed to execute line: {}", e);
             }
         }

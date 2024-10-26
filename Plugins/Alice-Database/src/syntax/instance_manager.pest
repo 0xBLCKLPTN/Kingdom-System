@@ -14,9 +14,12 @@ print_addbms = { "PRINTALLDDBMS" }
 create_collection = { "CREATE COLLECTION IN " ~ ident ~ " INSTANCE WITH NAME " ~ ident }
 create_document = { "CREATE DOCUMENT IN " ~ ident ~ " INSTANCE IN COLLECTION " ~ ident ~ " WITH NAME " ~ ident}
 
+supported_engines = { "GET SUPPORTED ENGINES" }
+
+
 sql_statement = {
 	create_instance | get_instance | get_instances | delete_instance | print_addbms |
-	create_collection | create_document
+	create_collection | create_document | supported_engines
 }
 
 sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | (";" ~ sql_statement))* ~ ";"? }
