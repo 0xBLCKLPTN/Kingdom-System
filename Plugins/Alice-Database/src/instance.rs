@@ -25,10 +25,8 @@ use uuid::Uuid;
 use std::path::{PathBuf, Path};
 use std::fs::File;
 use std::io::{self, BufRead};
-use crate::JSONEngine;
+use crate::{JSONEngine, LOGEngine};
 use std::collections::HashMap;
-use ring::{rand::{SecureRandom, SystemRandom}, hmac};
-use rand::rngs::OsRng;
 use crate::IMPestParser;
 use pest_derive::Parser;
 use pest::Parser;
@@ -54,51 +52,46 @@ pub struct InstanceManager {
     pub authenticated_apps: HashMap<String, String>,
 }
 
-
 impl InstanceManager {
     pub fn new(root_path: &PathBuf) -> Self {
         let name = Uuid::new_v4().to_string();
-
-        let mut instances: Vec<Instance> = vec![];
-        let mut authenticated_apps: HashMap<String, String> = HashMap::new();
-        Self {name, instances, root_path: root_path.to_owned(), authenticated_apps}
+        Self {
+            name,
+            instances: vec![],
+            root_path: root_path.to_owned(),
+            authenticated_apps: HashMap::new(),
+        }
     }
 
-    pub fn create_instance(&mut self, engine_type: &str) -> Result<String, Box<dyn std::error::Error>> {
-        let instance_name: String = Uuid::new_v4().to_string();
-
-        let mut engine = match engine_type {
+    pub fn create_instance(&mut self, engine_type: &str, name: &str) -> Result<String, Box<dyn std::error::Error>> {
+        let new_name = name.to_string();
+        let engine = match engine_type {
             "json_engine" => Engines::JSONEngine(JSONEngine::new(&self.root_path)),
+            "log_engine" => Engines::LOGEngine(LOGEngine::new(&self.root_path)),
             _ => {
                 println!("Engine not found.");
                 return Err(Box::new(std::io::Error::new(
-                            std::io::ErrorKind::InvalidInput, "Engine type not found")));
+                    std::io::ErrorKind::InvalidInput, "Engine type not found")));
             }
         };
-        let mut instance = Instance {engine, name: instance_name.clone()};
+        let instance = Instance { engine, name: new_name.clone() };
         self.instances.push(instance);
-        Ok(instance_name)
+        Ok(new_name)
     }
+
     pub fn get_instance(&self, instance_name: &str) -> Option<&Instance> {
         self.instances.iter().find(|i| i.name == instance_name)
     }
-    // Method to mutate the engine of an existing instance
 
-    pub fn get_mutable_engine(&mut self, instance_name: &str) -> Option<&mut JSONEngine> {
-        for instance in &mut self.instances {
-            if instance.name == instance_name {
-                if let Engines::JSONEngine(ref mut engine) = instance.engine {
-                    return Some(engine);
-                }
-            }
-        }
-        None
+    pub fn get_mutable_engine(&mut self, instance_name: &str) -> Option<&mut Engines> {
+        self.instances.iter_mut().find(|instance| instance.name == instance_name)
+            .map(|instance| &mut instance.engine)
     }
 
     pub fn sign_up(&mut self, app_name: String) -> String {
         let key = Uuid::new_v4().to_string();
-        &self.authenticated_apps.insert(app_name, key.clone());
-        return key;
+        self.authenticated_apps.insert(app_name, key.clone());
+        key
     }
 
     pub fn get_all_apps(&self) {
@@ -113,22 +106,66 @@ impl InstanceManager {
                         match inner_pair.as_rule() {
                             Rule::create_instance => {
                                 let inner = inner_pair.into_inner().as_str().split(" ENGINE ").collect::<Vec<_>>();
-                                let instance_id = &self.create_instance(&inner[1]);
+                                let instance_id = self.create_instance(inner[1], inner[0]);
                                 match instance_id {
                                     Ok(message) => adbprint!("NEW INSTANCE ID: {}", message),
-                                    Err(e) => adbprint!("{:#?}",e)
+                                    Err(e) => adbprint!("{:#?}", e),
                                 }
                             },
                             Rule::get_instance => {
                                 let inner = inner_pair.into_inner().as_str();
-                                adbprint!("{:#?}", inner);
+                                adbprint!("{:#?}", self.get_instance(inner));
                             },
                             Rule::get_instances => {
                                 adbprint!("{:#?}", self.instances);
                             },
                             Rule::print_addbms => {
                                 adbprint!("{:#?}", self);
+                            },
+                            Rule::create_collection => {
+                                let inner = inner_pair.into_inner().as_str().split(" INSTANCE WITH NAME ").collect::<Vec<_>>();
+                                if let Some(engine) = self.get_mutable_engine(inner[0]) {
+                                    match engine {
+                                        Engines::JSONEngine(json_engine) => {
+                                            json_engine.add_collection(inner[1]); // Call method for JSONEngine
+                                        },
+                                        Engines::LOGEngine(log_engine) => {
+                                            log_engine.add_collection(inner[1]); // Call method for LOGEngine
+                                        },
+                                        // You can add more engine variants here if needed
+                                    }
+                                } else {
+                                    adbprint!("Instance not found: {}", inner[0]);
+                                }
                             }
+                            
+                            Rule::create_document => {
+                                let inner = inner_pair.into_inner().as_str().split(" INSTANCE IN COLLECTION ").collect::<Vec<_>>();
+                                let inner_two = inner[1].split(" WITH NAME ").collect::<Vec<_>>();
+                            
+                                if let Some(engine) = self.get_mutable_engine(inner[0]) {
+                                    match engine {
+                                        Engines::JSONEngine(json_engine) => {
+                                            if let Some(collection) = json_engine.get_collection_mut(inner_two[0]) {
+                                                collection.add_document(inner_two[1], "");
+                                                adbprint!("DOCUMENT {} CREATED IN {}.{} C.I", inner_two[1], inner_two[0], inner[0]);
+                                            } else {
+                                                adbprint!("Collection not found in JSONEngine: {}", inner_two[0]);
+                                            }
+                                        },
+                                        Engines::LOGEngine(log_engine) => {
+                                            if let Some(collection) = log_engine.get_collection_mut(inner_two[0]) {
+                                                collection.add_document(inner_two[1], "");
+                                                adbprint!("DOCUMENT {} CREATED IN {}.{} C.I", inner_two[1], inner_two[0], inner[0]);
+                                            } else {
+                                                adbprint!("Collection not found in LOGEngine: {}", inner_two[0]);
+                                            }
+                                        },
+                                    }
+                                } else {
+                                    adbprint!("Instance not found: {}", inner[0]);
+                                }
+                            },                            
                             _ => unreachable!("I don't know this command"),
                         }
                     }
@@ -143,27 +180,22 @@ impl InstanceManager {
     }
 
     pub fn wrapped_execute_cmd(&mut self, command: &str) -> Result<(), Box<dyn std::error::Error>> {
-        match &self.execute_cmd(command) {
-            Ok(_) => println!(""),
-            Err(e) => adbprint!("Error! {}", e), 
-        }
-        Ok(())
+        self.execute_cmd(command)
+            .map_err(|e| { adbprint!("Error! {}", e); e })
     }
 
     pub fn execute_decl_file<P>(&mut self, filename: P) -> Result<(), io::Error>
     where
-        P: AsRef<Path> {
-            let file = File::open(filename)?;
-            let reader = io::BufReader::new(file);
-            let mut lines: Vec<String> = Vec::new();
+        P: AsRef<Path>, 
+    {
+        let file = File::open(filename)?;
+        let reader = io::BufReader::new(file);
 
-            for line in reader.lines() {
-                self.wrapped_execute_cmd(line?.replace("\n", "").as_str());
+        for line in reader.lines() {
+            if let Err(e) = self.wrapped_execute_cmd(&line?.replace("\n", "")) {
+                adbprint!("Failed to execute line: {}", e);
             }
-            Ok(())
+        }
+        Ok(())
     }
 }
-
-
-
-

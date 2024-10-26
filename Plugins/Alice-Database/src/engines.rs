@@ -21,8 +21,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
 use crate::json_engine::JSONEngine;
+use crate::log_engine::LOGEngine;
 
 #[derive(Debug, Clone)]
 pub enum Engines {
+    LOGEngine(LOGEngine),
     JSONEngine(JSONEngine),
 }

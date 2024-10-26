@@ -10,8 +10,9 @@ message Instance {
 
 message CreateInstanceRequest {
     string engine_type = 1;
-    string root_path = 2;
-    Token token = 3;
+    string name = 2;
+    string root_path = 3;
+    Token token = 4;
 }
 
 message CreateInstanceResponse {

@@ -34,6 +34,7 @@ use simplelog::*;
 use chrono::Local;
 
 pub mod json_engine;
+pub mod log_engine;
 pub mod engines;
 pub mod grpc_server;
 pub mod instance;
@@ -42,6 +43,7 @@ pub mod command_executor;
 pub mod cli;
 
 use json_engine::*;
+use log_engine::*;
 use engines::*;
 use grpc_server::*;
 use instance::*;

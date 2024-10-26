@@ -1,6 +1,6 @@
 alpha = { 'a'..'z' | 'A'..'Z' }
 digit = { '0'..'9' }
-ident = { !digit ~ (alpha | digit | "_")+ }
+ident = { (alpha | digit) ~ (alpha | digit | "_" | "-" )+ }
 
 item = { ident }
 items = { item ~ (( "," | "," ) ~ item)* }
@@ -9,11 +9,14 @@ create_instance = { "CREATE INSTANCE " ~ ident ~ " ENGINE " ~ ident }
 get_instance = { "GET INSTANCE " ~ ident }
 get_instances = { "GET INSTANCES" }
 delete_instance = { "DELETE INSTANCE " ~ ident }
-
 print_addbms = { "PRINTALLDDBMS" }
 
+create_collection = { "CREATE COLLECTION IN " ~ ident ~ " INSTANCE WITH NAME " ~ ident }
+create_document = { "CREATE DOCUMENT IN " ~ ident ~ " INSTANCE IN COLLECTION " ~ ident ~ " WITH NAME " ~ ident}
+
 sql_statement = {
-	create_instance | get_instance | get_instances | delete_instance | print_addbms
+	create_instance | get_instance | get_instances | delete_instance | print_addbms |
+	create_collection | create_document
 }
 
 sql_statements = _{ sql_statement ~ ((";" ~ sql_statement) | (";" ~ sql_statement))* ~ ";"? }
