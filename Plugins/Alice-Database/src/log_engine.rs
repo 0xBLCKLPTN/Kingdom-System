@@ -34,21 +34,21 @@ const ADB_DATA_DIR: &str = "ADB_Data";
 const LOG_ENGINE_DIR: &str = "log_engine";
 
 #[derive(Debug, Clone)]
-pub struct Document {
+pub struct JSONDocument {
     pub name: String,
     pub path: PathBuf,
     pub data: String,
 }
 
 #[derive(Debug, Clone)]
-pub struct Collection {
+pub struct JSONCollection {
     pub name: String,
-    pub documents: Vec<Document>,
+    pub documents: Vec<JSONDocument>,
 }
 
-impl Collection {
+impl DefaultCollection<Document> for JSONCollection {
     // Method to get a document by name
-    pub fn get_document(&self, name: &str) -> Option<&Document> {
+    pub fn get_document(&self, name: &str) -> Option<&JSONDocument> {
         self.documents.iter().find(|doc| doc.name == name)
     }
 
@@ -60,7 +60,7 @@ impl Collection {
     /// # Returns
     /// An `Option` containing a mutable reference to the `Document` if found,
     /// or `None` if not found.
-    pub fn get_document_mut(&mut self, name: &str) -> Option<&mut Document> {
+    pub fn get_document_mut(&mut self, name: &str) -> Option<&mut JSONDocument> {
         self.documents.iter_mut().find(|doc| doc.name == name)
     }
 
@@ -103,9 +103,10 @@ impl Collection {
 
 #[derive(Debug, Clone)]
 pub struct LOGEngine {
-    pub collections: Vec<Collection>,
+    pub collections: Vec<JSONCollection>,
 }
-impl LOGEngine {
+
+impl DefaultEngine<JSONCollection, JSONDocument> for LOGEngine {
     /// Create a new `JSONEngine`.
     ///
     /// # Parameters
@@ -115,7 +116,7 @@ impl LOGEngine {
     /// A new instance of `JSONEngine`.
     pub fn new(root: &Path, ) -> Self {
         let collections = get_exists_collections(root);
-        LOGEngine { collections }
+        JSONEngine { collections }
     }
 
 
@@ -126,7 +127,7 @@ impl LOGEngine {
     ///
     /// # Returns
     /// An `Option` containing a mutable reference to the `Collection`, if found.
-    pub fn get_collection_mut(&mut self, name: &str) -> Option<&mut Collection> {
+    pub fn get_collection_mut(&mut self, name: &str) -> Option<&mut JSONCollection> {
         self.collections.iter_mut().find(|col| col.name == name)
     }
 
@@ -137,7 +138,7 @@ impl LOGEngine {
     ///
     /// # Returns
     /// An `Option` containing a mutable reference to the newly added `Collection`.
-    pub fn add_collection(&mut self, name: &str) -> Option<&mut Collection> {
+    pub fn add_collection(&mut self, name: &str) -> Option<&mut JSONCollection> {
         let collection_path = Path::new(&self.root_path()).join(name);
         fs::create_dir_all(&collection_path).ok()?; // Create the directory for new collection
 
@@ -157,7 +158,7 @@ impl LOGEngine {
     ///
     /// # Returns
     /// An `Option` containing a reference to the `Collection`, if found.
-    pub fn get_collection(&self, name: &str) -> Option<&Collection> {
+    pub fn get_collection(&self, name: &str) -> Option<&JSONCollection> {
         self.collections.iter().find(|col| col.name == name)
     }
 
@@ -169,7 +170,7 @@ impl LOGEngine {
     ///
     /// # Returns
     /// An `Option` containing a reference to the `Document`, if found.
-    pub fn get_document(&self, collection_name: &str, document_name: &str) -> Option<&Document> {
+    pub fn get_document(&self, collection_name: &str, document_name: &str) -> Option<&JSONDocument> {
         self.get_collection(collection_name)?.get_document(document_name)
     }
 
@@ -181,7 +182,7 @@ impl LOGEngine {
 
 
 // Functions for handling file operations and collections
-fn get_documents_in_collection(path: &Path) -> Vec<Document> {
+fn get_documents_in_collection(path: &Path) -> Vec<JSONDocument> {
     let entries = fs::read_dir(path).unwrap();
     let mut documents: Vec<Document> = vec![];
 
@@ -209,7 +210,7 @@ fn read_file_data(path: &Path) -> io::Result<String> {
     Ok(contents)
 }
 
-fn get_exists_collections(path: &Path) -> Vec<Collection> {
+fn get_exists_collections(path: &Path) -> Vec<JSONCollection> {
     let mut collections: Vec<Collection> = vec![];
 
     if path.exists() && path.is_dir() {

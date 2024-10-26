@@ -20,6 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
+
+pub mod universal_engine;
 pub mod json_engine;
 pub mod log_engine;
 pub mod engines;
@@ -32,6 +34,9 @@ pub mod cli;
 pub mod prelude; 
 use prelude::*;
 
+//pub mod universal_engine;
+//use universal_engine::DefaultDocument;
+//use std::path::PathBuf;
 /* gRPC 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -52,11 +57,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 */
 
+
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let root_path: PathBuf = get_root_path();
-    let mut im = InstanceManager::new(&root_path);
-    let k = im.execute_decl_file(Path::new("./test.decl"));
+    //let root_path: PathBuf = get_root_path();
+    //let mut im = InstanceManager::new(&root_path);
+    //let k = im.execute_decl_file(Path::new("./test.decl"));
     //cli(&mut im);
     Ok(())
 }
