@@ -189,16 +189,23 @@ impl InstanceManager {
         self.execute_cmd(command)
             .map_err(|e| { adbprint!("Error! {}", e); e })
     }
-
     pub fn execute_decl_file<P>(&mut self, filename: P) -> Result<(), io::Error>
     where
-        P: AsRef<Path>, 
+        P: AsRef<Path>,
     {
         let file = File::open(filename)?;
         let reader = io::BufReader::new(file);
 
         for line in reader.lines() {
-            if let Err(e) = self.wrapped_execute_cmd(&line?.replace("\n", "")) {
+            let line = line?;
+            
+            // Check if the line starts with '#', continue if it does
+            if line.trim_start().starts_with('#') {
+                continue; // Skip this line
+            }
+
+            // Execute the command after removing newline characters
+            if let Err(e) = self.wrapped_execute_cmd(&line.replace("\n", "")) {
                 adbprint!("Failed to execute line: {}", e);
             }
         }
